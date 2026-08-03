@@ -259,7 +259,10 @@
     function renderSummary(){
       const count = reviews.length;
       const average = count ? reviews.reduce((sum, r) => sum + r.rating, 0) / count : 0;
-      document.getElementById('ratingStars').style.setProperty('--rating', average);
+      document.getElementById('ratingStars').innerHTML = [1,2,3,4,5].map(i => {
+        const fill = Math.max(0, Math.min(1, average - (i - 1))) * 100;
+        return '<span class="rs-star" style="--fill:' + fill + '%">★</span>';
+      }).join('');
       document.getElementById('ratingAverage').textContent = average.toFixed(1);
       document.getElementById('ratingCount').textContent =
         'Based on ' + count + (count === 1 ? ' review' : ' reviews');
@@ -299,7 +302,7 @@
           + '<div class="review-menu">'
           + '<button type="button" class="review-menu-btn" aria-haspopup="true" aria-expanded="false" aria-label="Review options">&#8942;</button>'
           + '<div class="review-menu-dropdown">'
-          + '<button type="button" data-action="edit">Edit</button>'
+          + (isOwner ? '<button type="button" data-action="edit">Edit</button>' : '')
           + '<button type="button" data-action="report"' + (r.reported ? ' disabled' : '') + '>' + (r.reported ? 'Reported' : 'Report') + '</button>'
           + (isOwner ? '<button type="button" data-action="delete" class="is-danger">Delete</button>' : '')
           + '</div>'
@@ -487,6 +490,7 @@
         saveReviews(reviews);
         renderList();
       } else if(actionBtn.dataset.action === 'edit'){
+        if(review.authorId !== authorId) return; // you can only edit your own reviews
         closeAllMenus();
         enterEditMode(review);
       }
