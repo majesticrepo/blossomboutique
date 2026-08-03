@@ -12,72 +12,108 @@
   });
 
 // nav shrink on scroll, and swap gold text for white while the nav sits
-  // over the hero photo (transitions smoothly back to gold once past it)
+  // over the hero photo (transitions smoothly back to gold once past it).
+  // Pages without a hero (about/contact) never gain the on-hero class.
   const nav = document.getElementById('nav');
   const heroSection = document.getElementById('home');
   function updateNavState(){
     nav.classList.toggle('scrolled', window.scrollY > 50);
-    const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
-    nav.classList.toggle('on-hero', window.scrollY + nav.offsetHeight < heroBottom);
+    if(heroSection){
+      const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
+      nav.classList.toggle('on-hero', window.scrollY + nav.offsetHeight < heroBottom);
+    }
   }
   window.addEventListener('scroll', updateNavState);
   window.addEventListener('resize', updateNavState);
   updateNavState();
 
+  // ----- Hamburger menu: only present below the desktop breakpoint, but
+  // wired up everywhere so it works if the viewport is resized down -----
+  const navToggle = document.getElementById('navToggle');
+  const navRight = document.getElementById('navRight');
+  if(navToggle && navRight){
+    function closeMenu(){
+      navRight.classList.remove('open');
+      navToggle.classList.remove('is-open');
+      navToggle.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('menu-open');
+    }
+    function openMenu(){
+      navRight.classList.add('open');
+      navToggle.classList.add('is-open');
+      navToggle.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('menu-open');
+    }
+    navToggle.addEventListener('click', () => {
+      if(navRight.classList.contains('open')) closeMenu(); else openMenu();
+    });
+    navRight.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+    window.addEventListener('keydown', e => { if(e.key === 'Escape') closeMenu(); });
+    window.addEventListener('resize', () => { if(window.innerWidth > 900) closeMenu(); });
+  }
+
   // ----- Overlay: only one page visible at a time (colour page OR flower
-  // detail page), and you can't scroll past it without going back first -----
+  // detail page), and you can't scroll past it without going back first.
+  // Only present on index.html - about/contact link back into it instead. -----
   const overlay = document.getElementById('colourOverlay');
-  const overlayPages = overlay.querySelectorAll('.colour-page, .detail-page');
+  const overlayPages = overlay ? overlay.querySelectorAll('.colour-page, .detail-page') : [];
 
-  function showOverlayPage(id){
-    overlay.style.display = 'block';
-    document.body.classList.add('scroll-locked');
-    overlayPages.forEach(p => {
-      const isMatch = p.id === id;
-      p.style.display = isMatch ? 'flex' : 'none';
-      p.classList.remove('active');
-      if(isMatch) p.scrollTop = 0;
-    });
-    const activePage = document.getElementById(id);
-    if(activePage){
-      // next frame so the transition actually fires
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        activePage.classList.add('active');
-      }));
+  // Everything below only applies where the overlay markup exists (index.html).
+  // On about.html/contact.html the same nav-dot/hash links just navigate
+  // straight back to index.html#page-... as plain browser links.
+  if(overlay){
+    function showOverlayPage(id){
+      overlay.style.display = 'block';
+      document.body.classList.add('scroll-locked');
+      overlayPages.forEach(p => {
+        const isMatch = p.id === id;
+        p.style.display = isMatch ? 'flex' : 'none';
+        p.classList.remove('active');
+        if(isMatch) p.scrollTop = 0;
+      });
+      const activePage = document.getElementById(id);
+      if(activePage){
+        // next frame so the transition actually fires
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          activePage.classList.add('active');
+        }));
+      }
     }
-  }
 
-  function hideColourOverlay(){
-    overlay.style.display = 'none';
-    document.body.classList.remove('scroll-locked');
-  }
-
-  function handleHash(){
-    const hash = window.location.hash;
-    if(hash.startsWith('#page-') || hash.startsWith('#detail-')){
-      showOverlayPage(hash.replace('#', ''));
-    } else {
-      hideColourOverlay();
+    function hideColourOverlay(){
+      overlay.style.display = 'none';
+      document.body.classList.remove('scroll-locked');
     }
+
+    function handleHash(){
+      const hash = window.location.hash;
+      if(hash.startsWith('#page-') || hash.startsWith('#detail-')){
+        showOverlayPage(hash.replace('#', ''));
+      } else {
+        hideColourOverlay();
+      }
+    }
+
+    window.addEventListener('hashchange', handleHash);
+    handleHash(); // in case the page loads with a colour already in the URL
+
+    // Prevent the browser's own anchor-jump for swatch/photo links; we handle
+    // showing/hiding entirely ourselves so the background never scrolls.
+    document.querySelectorAll('a.nav-dot, a.back-link').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        window.location.hash = link.getAttribute('href').replace('#', '');
+      });
+    });
   }
 
-  window.addEventListener('hashchange', handleHash);
-  handleHash(); // in case the page loads with a colour already in the URL
-
-  // Prevent the browser's own anchor-jump for swatch/photo links; we handle
-  // showing/hiding entirely ourselves so the background never scrolls.
-  document.querySelectorAll('a.nav-dot, a.back-link').forEach(link => {
-    link.addEventListener('click', e => {
-      e.preventDefault();
-      window.location.hash = link.getAttribute('href').replace('#', '');
-    });
-  });
-
-  // ----- Bloom colour palette, shared by the cursor tint and the click burst -----
+  // ----- Bloom colour palette, shared by the cursor tint and the click burst.
+  // White is mapped to the site's gold accent rather than its literal near-
+  // white hex, since a white-on-white cursor/outline would be invisible -----
   const bloomPalette = {
     red:'#C0392B', orange:'#D96C2B', yellow:'#DDAF35', green:'#6B8F52',
     blue:'#5F8DBF', purple:'#8B6FA8', pink:'#E39FB0', brown:'#7B5A3E',
-    black:'#2A2622', white:'#FBF8F2', beige:'#D8C7A8', gold:'#9C7A32'
+    black:'#2A2622', white:'#C6A15B', beige:'#D8C7A8', gold:'#9C7A32'
   };
 
   function bloomNameFromLink(link){
