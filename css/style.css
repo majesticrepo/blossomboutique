@@ -892,6 +892,50 @@
   .star-btn:hover{ transform:scale(1.15); }
   .star-btn.is-active{ color:var(--gold); }
 
+  .review-field input[type="file"]{
+    display:block;
+    width:100%;
+    font-family:'Quicksand', sans-serif;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+  }
+  .review-media-preview{
+    display:flex;
+    flex-wrap:wrap;
+    gap:0.6rem;
+    margin-top:0.8rem;
+  }
+  .review-media-thumb{
+    position:relative;
+    width:72px;
+    height:72px;
+    border-radius:10px;
+    overflow:hidden;
+    border:1px solid var(--hair);
+    background:#000;
+  }
+  .review-media-thumb img,
+  .review-media-thumb video{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .review-media-thumb .remove-media{
+    position:absolute;
+    top:3px; right:3px;
+    width:18px; height:18px;
+    line-height:16px;
+    text-align:center;
+    padding:0;
+    background:rgba(20,10,10,0.6);
+    color:#fff;
+    border:none;
+    border-radius:50%;
+    font-size:0.75rem;
+    cursor:pointer;
+  }
+
   .review-submit{
     display:block;
     width:100%;
@@ -911,6 +955,21 @@
   }
   .review-submit:hover{ background:var(--gold); transform:translateY(-2px); }
 
+  .review-cancel-edit{
+    display:block;
+    margin:0.7rem auto 0;
+    background:none;
+    border:none;
+    font-family:'Quicksand', sans-serif;
+    font-size:0.8rem;
+    letter-spacing:0.08em;
+    text-decoration:underline;
+    color:var(--ink-soft);
+    cursor:pointer;
+  }
+  .review-cancel-edit:hover{ color:var(--gold-deep); }
+  .review-cancel-edit[hidden]{ display:none; }
+
   .review-feedback{
     margin:0.9rem 0 0;
     min-height:1.1em;
@@ -927,11 +986,13 @@
     padding-bottom:4rem;
   }
   .review-card{
+    position:relative;
     border:1px solid var(--hair);
     border-radius:14px;
-    padding:1.5rem 1.7rem;
+    padding:1.5rem 3.4rem 1.5rem 1.7rem;
     background:var(--ivory);
   }
+  .review-card.is-reported{ background:rgba(178,58,58,0.04); }
   .review-card-head{
     display:flex;
     align-items:baseline;
@@ -951,6 +1012,16 @@
     color:var(--ink-soft);
     opacity:0.75;
   }
+  .review-edited-tag{ font-style:italic; opacity:0.8; }
+  .review-reported-tag{
+    display:inline-block;
+    margin-left:0.6rem;
+    font-size:0.68rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:#B23A3A;
+    vertical-align:middle;
+  }
   .review-card-stars{
     color:var(--gold);
     font-size:1rem;
@@ -963,10 +1034,74 @@
     line-height:1.75;
     font-size:0.96rem;
   }
+  .review-card-media{
+    display:flex;
+    flex-wrap:wrap;
+    gap:0.7rem;
+    margin-top:1rem;
+  }
+  .review-card-media .review-media-thumb{
+    width:130px;
+    height:130px;
+  }
   .review-list-empty{
     text-align:center;
     color:var(--ink-soft);
     font-style:italic;
+  }
+
+  /* ---------- per-review "..." menu: edit / report / delete ---------- */
+  .review-menu{
+    position:absolute;
+    top:1rem;
+    right:1rem;
+  }
+  .review-menu-btn{
+    background:none;
+    border:none;
+    padding:0.15rem 0.5rem;
+    font-size:1.3rem;
+    line-height:1;
+    color:var(--ink-soft);
+    border-radius:6px;
+    cursor:pointer;
+    transition:background .2s ease, color .2s ease;
+  }
+  .review-menu-btn:hover{ background:rgba(43,36,28,0.07); color:var(--ink); }
+  .review-menu-dropdown{
+    display:none;
+    position:absolute;
+    top:100%;
+    right:0;
+    margin-top:0.3rem;
+    min-width:150px;
+    background:var(--ivory);
+    border:1px solid var(--hair);
+    border-radius:10px;
+    box-shadow:0 10px 24px rgba(43,36,28,0.18);
+    overflow:hidden;
+    z-index:20;
+  }
+  .review-menu.is-open .review-menu-dropdown{ display:block; }
+  .review-menu-dropdown button{
+    display:block;
+    width:100%;
+    text-align:left;
+    padding:0.65rem 1rem;
+    background:none;
+    border:none;
+    font-family:'Quicksand', sans-serif;
+    font-size:0.85rem;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .review-menu-dropdown button:hover{ background:rgba(198,161,91,0.14); }
+  .review-menu-dropdown button.is-danger{ color:#B23A3A; }
+  .review-menu-dropdown button:disabled{
+    color:var(--ink-soft);
+    opacity:0.6;
+    cursor:default;
+    background:none;
   }
 
   @media (max-width:560px){

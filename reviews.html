@@ -78,7 +78,14 @@
         <textarea id="reviewText" name="text" rows="4" placeholder="Tell us about your experience..." maxlength="600" required></textarea>
       </label>
 
+      <div class="review-field">
+        <span>Add photos or videos (optional)</span>
+        <input type="file" id="reviewMedia" accept="image/*,video/*" multiple>
+        <div class="review-media-preview" id="reviewMediaPreview"></div>
+      </div>
+
       <button type="submit" class="review-submit">Send Review</button>
+      <button type="button" class="review-cancel-edit" id="reviewCancelEdit" hidden>Cancel edit</button>
       <p class="review-feedback" id="reviewFeedback" aria-live="polite"></p>
     </form>
   </div>
