@@ -1,0 +1,663 @@
+:root{
+    --ivory:#FFFDF7;
+    --paper:#FFF9EE;
+    --gold:#C6A15B;
+    --gold-deep:#9C7A32;
+    --gold-light:#EFDFB8;
+    --ink:#2B241C;
+    --ink-soft:#5A5145;
+    --blush:#F3D9DE;
+    --hair:rgba(198,161,91,0.35);
+  }
+
+  *{ box-sizing:border-box; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    margin:0;
+    background:var(--ivory);
+    color:var(--ink);
+    font-family:'Quicksand', sans-serif;
+    overflow-x:hidden;
+  }
+
+  h1,h2,h3, .brand{
+    font-family:'Shippori Mincho', serif;
+    font-weight:600;
+    margin:0;
+  }
+
+  /* ---------- NAV ---------- */
+  .nav{
+    position:fixed;
+    top:0; left:0; width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:28px 5vw;
+    z-index:100;
+    transition:padding .35s ease, background .35s ease, box-shadow .35s ease;
+  }
+  .nav.scrolled{
+    padding:14px 5vw;
+    background:rgba(255,253,247,0.82);
+    backdrop-filter:blur(6px);
+    box-shadow:0 1px 0 var(--hair);
+  }
+  .nav .brand{
+    color:var(--gold-deep);
+    font-size:1.3rem;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+  }
+  .brand-with-mark{
+    display:inline-flex;
+    align-items:center;
+    gap:0.5em;
+  }
+  .brand-rose{
+    height:1.9em;
+    width:auto;
+    display:block;
+    filter:drop-shadow(0 1px 2px rgba(156,122,50,0.25));
+  }
+  .nav ul{
+    list-style:none;
+    display:flex;
+    gap:2.6rem;
+    margin:0; padding:0;
+  }
+  .nav a{
+    position:relative;
+    color:var(--gold-deep);
+    text-decoration:none;
+    font-weight:600;
+    letter-spacing:0.14em;
+    font-size:0.82rem;
+    text-transform:uppercase;
+    padding-bottom:4px;
+    transition:letter-spacing .3s ease, color .3s ease;
+  }
+  .nav a::after{
+    content:'';
+    position:absolute;
+    left:50%; bottom:0;
+    width:0%; height:1px;
+    background:var(--gold);
+    transition:all .35s cubic-bezier(.4,0,.2,1);
+    transform:translateX(-50%);
+  }
+  .nav a:hover{
+    letter-spacing:0.22em;
+    color:var(--gold);
+  }
+  .nav a:hover::after{ width:100%; }
+
+  .nav-right{
+    display:flex;
+    align-items:center;
+    gap:2.4rem;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+  }
+  .nav-dots{
+    display:flex;
+    align-items:center;
+    gap:0.5rem;
+  }
+  .nav-dot{
+    width:13px;
+    height:13px;
+    border-radius:50%;
+    display:block;
+    border:1px solid rgba(43,36,28,0.18);
+    box-shadow:0 1px 2px rgba(43,36,28,0.15);
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  .nav-dot:hover{
+    transform:scale(1.35);
+    box-shadow:0 0 0 3px rgba(198,161,91,0.25);
+  }
+
+  /* ---------- HERO (full-bleed scene) ---------- */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    overflow:hidden;
+    background:#000;
+  }
+  .hero-bg-photo{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+  .hero-scrim{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(180deg, rgba(20,10,10,0.15) 0%, rgba(20,10,10,0.55) 100%);
+  }
+  .hero-petals{
+    position:absolute;
+    inset:0;
+    overflow:hidden;
+    pointer-events:none;
+  }
+  .hero-content{
+    position:relative;
+    z-index:3;
+    min-height:100vh;
+    max-width:640px;
+    margin:0 auto;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:14vh 6vw;
+    color:#fff;
+  }
+  .hero-eyebrow{
+    display:block;
+    font-size:0.75rem;
+    letter-spacing:0.4em;
+    text-transform:uppercase;
+    opacity:0.9;
+    margin-bottom:1.1rem;
+  }
+  .hero-title{
+    font-size:clamp(2.6rem, 5vw, 4.2rem);
+    line-height:1.15;
+  }
+  .hero-title em{
+    font-style:italic;
+    opacity:0.9;
+  }
+  .hero-sub{
+    margin-top:1.4rem;
+    font-size:1.05rem;
+    line-height:1.8;
+    opacity:0.92;
+    font-weight:500;
+  }
+  .hero-line{
+    margin-top:2.2rem;
+    width:70px;
+    height:1px;
+    background:currentColor;
+    opacity:0.7;
+  }
+
+  /* falling petals - spawn from the canopy */
+  .petal{
+    position:absolute;
+    width:13px;
+    height:9px;
+    background:var(--blush);
+    border-radius:100% 0% 100% 0%;
+    opacity:0;
+    box-shadow:inset -2px -2px 4px rgba(198,161,91,0.25);
+    animation:fall linear infinite;
+  }
+  @keyframes fall{
+    0%{ transform:translate(0,0) rotate(0deg); opacity:0; }
+    6%{ opacity:0.95; }
+    80%{ opacity:0.6; }
+    100%{ transform:translate(var(--drift,60px), var(--fallDist,520px)) rotate(430deg); opacity:0; }
+  }
+
+  /* gentle grass sway */
+  .blade{
+    transform-origin:bottom center;
+    animation:grass-sway 3.4s ease-in-out infinite;
+  }
+  @keyframes grass-sway{
+    0%,100%{ transform:rotate(-4deg); }
+    50%{ transform:rotate(5deg); }
+  }
+
+  /* ---------- SECTION SHARED ---------- */
+  section{
+    padding:8vh 6vw;
+  }
+  .section-head{
+    text-align:center;
+    margin-bottom:4rem;
+  }
+  .section-eyebrow{
+    display:block;
+    font-size:0.75rem;
+    letter-spacing:0.4em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:0.9rem;
+  }
+  .section-title{
+    font-size:clamp(2rem, 4vw, 3rem);
+    color:var(--ink);
+  }
+  .section-title em{ font-style:italic; color:var(--gold-deep); }
+
+  /* ---------- PRODUCTS BANNER (swaying blossom) ---------- */
+  .products{
+    background:var(--paper);
+  }
+  .sway-banner{
+    position:relative;
+    width:100%;
+    height:min(26vh, 220px);
+    margin-bottom:3rem;
+    overflow:hidden;
+    border-top:1px solid var(--hair);
+    border-bottom:1px solid var(--hair);
+  }
+  .sway-banner svg{
+    position:absolute;
+    bottom:-10px;
+    left:0;
+    width:100%;
+    height:auto;
+  }
+  .branch-group{
+    transform-origin:0px 100%;
+    animation:sway 6s ease-in-out infinite;
+  }
+  .branch-group.reverse{
+    animation-delay:-3s;
+    transform-origin:100% 100%;
+  }
+  @keyframes sway{
+    0%,100%{ transform:rotate(-3.5deg); }
+    50%{ transform:rotate(3.5deg); }
+  }
+
+  /* ---------- COLOR / FLOWER GRID ---------- */
+  .flower-grid{
+    display:grid;
+    grid-template-columns:repeat(6, 1fr);
+    gap:2.4rem 1rem;
+    max-width:1300px;
+    margin:0 auto;
+  }
+  .flower-item{
+    text-align:center;
+    padding:1.6rem 0.6rem;
+    border-radius:14px;
+    transition:transform .35s ease, background .35s ease;
+  }
+  .flower-item:hover{
+    transform:translateY(-6px);
+    background:rgba(255,255,255,0.6);
+  }
+  .swatch{
+    width:34px; height:34px;
+    border-radius:50%;
+    margin:0 auto 0.9rem;
+    border:2px solid rgba(0,0,0,0.06);
+    box-shadow:0 3px 10px rgba(0,0,0,0.08);
+  }
+  .colour-name{
+    font-size:0.72rem;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    font-weight:700;
+    margin-bottom:0.35rem;
+  }
+  .flower-name{
+    font-family:'Shippori Mincho', serif;
+    font-size:1.05rem;
+    color:var(--ink);
+    font-style:italic;
+  }
+
+  /* colour tokens */
+  .c-red     .swatch{ background:#C0392B; } .c-red     .colour-name{ color:#C0392B; }
+  .c-orange  .swatch{ background:#D96C2B; } .c-orange  .colour-name{ color:#D96C2B; }
+  .c-yellow  .swatch{ background:#DDAF35; } .c-yellow  .colour-name{ color:#B98B1E; }
+  .c-green   .swatch{ background:#6B8F52; } .c-green   .colour-name{ color:#6B8F52; }
+  .c-blue    .swatch{ background:#5F8DBF; } .c-blue    .colour-name{ color:#5F8DBF; }
+  .c-purple  .swatch{ background:#8B6FA8; } .c-purple  .colour-name{ color:#8B6FA8; }
+  .c-pink    .swatch{ background:#E39FB0; } .c-pink    .colour-name{ color:#D67E96; }
+  .c-brown   .swatch{ background:#7B5A3E; } .c-brown   .colour-name{ color:#7B5A3E; }
+  .c-black   .swatch{ background:#2A2622; } .c-black   .colour-name{ color:#2A2622; }
+  .c-white   .swatch{ background:#FBF8F2; border-color:var(--gold); } .c-white .colour-name{ color:#B7A46B; }
+  .c-beige   .swatch{ background:#D8C7A8; } .c-beige   .colour-name{ color:#A88E5C; }
+  .c-gold    .swatch{ background:linear-gradient(135deg,#E9D9B0,#9C7A32); } .c-gold .colour-name{ color:var(--gold-deep); }
+
+  /* clickable swatches */
+  a.flower-item{ text-decoration:none; color:inherit; display:block; cursor:pointer; }
+  a.bloom-link{ display:block; cursor:pointer; }
+
+  /* ---------- FULL-COLOUR PRODUCT PAGES (scroll-locked overlay) ---------- */
+  body.scroll-locked{ overflow:hidden; }
+
+  .colour-overlay{
+    position:fixed;
+    inset:0;
+    z-index:300;
+    display:none;
+  }
+  .colour-page{
+    position:relative;
+    display:none; /* JS switches the active one to flex */
+    flex-direction:column;
+    height:100vh;
+    width:100%;
+    overflow-y:auto;
+    overflow-x:hidden;
+    color:#fff;
+    background:linear-gradient(160deg,
+      color-mix(in srgb, var(--c) 60%, black) 0%,
+      var(--c) 55%,
+      color-mix(in srgb, var(--c) 65%, white) 100%);
+  }
+  .colour-page.dark-text{ color:var(--ink); }
+  .colour-page .bokeh{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+  }
+
+  .page-watermark{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-family:'Shippori Mincho', serif;
+    font-weight:700;
+    font-size:16vw;
+    line-height:1;
+    letter-spacing:-0.02em;
+    text-transform:uppercase;
+    color:currentColor;
+    opacity:0;
+    transform:translateY(50px) scale(0.9);
+    transition:opacity 1.5s cubic-bezier(.16,1,.3,1) .2s, transform 1.5s cubic-bezier(.16,1,.3,1) .2s;
+    pointer-events:none;
+    white-space:nowrap;
+    z-index:1;
+  }
+  .colour-page.active .page-watermark{ opacity:0.10; transform:translateY(0) scale(1); }
+
+  .page-main{
+    position:relative;
+    z-index:2;
+    flex:1 0 auto;
+    min-height:100vh;
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:5vw;
+    max-width:1300px;
+    margin:0 auto;
+    padding:10vh 6vw;
+    flex-wrap:wrap;
+  }
+
+  .back-link{
+    position:fixed;
+    top:34px; left:6vw;
+    z-index:310;
+    text-decoration:none;
+    color:inherit;
+    font-size:0.74rem;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    opacity:0.85;
+    padding-bottom:3px;
+    border-bottom:1px solid currentColor;
+    transition:opacity .3s ease, letter-spacing .3s ease;
+  }
+  .back-link:hover{ opacity:1; letter-spacing:0.3em; }
+
+  .page-visual{
+    flex:1 1 320px;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    height:56vh;
+    min-height:340px;
+    opacity:0;
+    transform:translateX(-100px);
+    transition:opacity 1.5s ease .4s, transform 1.5s ease .4s;
+  }
+  .colour-page.active .page-visual{ opacity:1; transform:translateX(0); }
+
+  .cartoon-flower{
+    position:relative;
+    width:min(38vh, 270px);
+    height:min(38vh, 270px);
+    animation:orb-float 6s ease-in-out infinite;
+    filter:drop-shadow(0 22px 34px rgba(0,0,0,0.3));
+  }
+  @keyframes orb-float{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-14px); } }
+
+  .page-text{
+    flex:1 1 360px;
+    max-width:480px;
+    text-align:left;
+    opacity:0;
+    transform:translateX(60px);
+    transition:opacity 1.5s ease .6s, transform 1.5s ease .6s;
+  }
+  .colour-page.active .page-text{ opacity:1; transform:translateX(0); }
+
+  .page-eyebrow{
+    display:block;
+    font-size:0.78rem;
+    letter-spacing:0.4em;
+    text-transform:uppercase;
+    opacity:0.85;
+    margin-bottom:1.1rem;
+  }
+  .page-subtitle{
+    font-family:'Shippori Mincho', serif;
+    font-size:clamp(2.2rem, 4.4vw, 3.4rem);
+    line-height:1.2;
+  }
+  .page-desc{
+    margin-top:1.3rem;
+    font-size:1.02rem;
+    line-height:1.85;
+    opacity:0.92;
+    font-weight:500;
+    white-space:pre-line;
+  }
+  .page-line{
+    width:70px; height:1px;
+    background:currentColor;
+    opacity:0.6;
+    margin:1.6rem 0 0;
+  }
+
+  .page-more{
+    position:relative;
+    z-index:2;
+    padding:8vh 6vw 10vh;
+    text-align:center;
+    font-style:italic;
+    font-size:0.95rem;
+    opacity:0.85;
+    border-top:1px solid rgba(255,255,255,0.25);
+  }
+  .colour-page.dark-text .page-more{ border-top-color:rgba(43,36,28,0.2); }
+
+  @media (max-width:900px){
+    .page-main{ flex-direction:column; text-align:center; padding-top:14vh; }
+    .page-text{ text-align:center; }
+    .page-line{ margin:1.6rem auto 0; }
+  }
+
+  /* ---------- FLOWER DETAIL PAGES (corner-flourish style) ---------- */
+  .detail-page{
+    position:relative;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+    width:100%;
+    overflow-y:auto;
+    overflow-x:hidden;
+    color:var(--ink);
+    background:#000;
+  }
+  .detail-bg{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center;
+    filter:var(--f);
+    z-index:0;
+  }
+  .detail-page.dark-text{ color:var(--ink); }
+  .detail-page.detail-sakura{ background:#000; }
+
+  .detail-inner{
+    position:relative;
+    z-index:3;
+    max-width:520px;
+    width:78%;
+    margin:0 auto;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    padding:6vh 6vw;
+    color:var(--ink);
+    opacity:0;
+    transform:translateY(30px);
+    transition:opacity 1.3s ease .3s, transform 1.3s ease .3s;
+  }
+  .detail-page.active .detail-inner{ opacity:1; transform:translateY(0); }
+
+  .detail-eyebrow{
+    display:block;
+    font-size:0.78rem;
+    letter-spacing:0.4em;
+    text-transform:uppercase;
+    opacity:0.85;
+    margin-bottom:1.1rem;
+  }
+  .detail-title{
+    font-family:'Shippori Mincho', serif;
+    font-size:clamp(2.2rem, 5vw, 3.4rem);
+  }
+  .detail-line{
+    width:70px; height:1px;
+    background:currentColor;
+    opacity:0.6;
+    margin:1.6rem auto;
+  }
+  .detail-body{
+    font-size:1.08rem;
+    line-height:2;
+    opacity:0.95;
+    text-align:left;
+  }
+  .detail-body::first-letter{
+    font-family:'Shippori Mincho', serif;
+    font-size:3.2rem;
+    float:left;
+    line-height:0.8;
+    padding-right:0.15em;
+    padding-top:0.1em;
+    color:var(--gold-deep);
+  }
+
+  /* sakura detail page: full-bleed painting with translucent petals */
+  .detail-bg-photo{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    z-index:0;
+  }
+  .detail-scrim{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(180deg, rgba(20,10,10,0.15) 0%, rgba(20,10,10,0.55) 100%);
+    z-index:1;
+  }
+  .detail-petals{
+    position:absolute;
+    inset:0;
+    overflow:hidden;
+    z-index:2;
+    pointer-events:none;
+  }
+  .petal.soft{
+    animation-name:fall-soft;
+    filter:blur(0.5px);
+  }
+  @keyframes fall-soft{
+    0%{ transform:translate(0,0) rotate(0deg); opacity:0; }
+    6%{ opacity:0.55; }
+    80%{ opacity:0.3; }
+    100%{ transform:translate(var(--drift,60px), var(--fallDist,520px)) rotate(430deg); opacity:0; }
+  }
+  .detail-sakura .detail-inner{ color:#fff; }
+  .detail-sakura .detail-body::first-letter{ color:#F7D5E1; }
+
+
+  .about{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:5vw;
+    flex-wrap:wrap;
+  }
+  .about-mark{
+    font-family:'Shippori Mincho', serif;
+    font-size:clamp(4rem, 9vw, 8rem);
+    color:var(--gold-light);
+    line-height:1;
+    user-select:none;
+  }
+  .about-text{
+    max-width:480px;
+  }
+  .about-text p{
+    font-size:1.02rem;
+    line-height:1.9;
+    color:var(--ink-soft);
+    font-weight:500;
+  }
+
+  /* ---------- FOOTER / CONTACT ---------- */
+  footer{
+    text-align:center;
+    padding:6vh 6vw;
+    border-top:1px solid var(--hair);
+  }
+  footer .brand{
+    color:var(--gold-deep);
+    font-size:1.1rem;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+  }
+  footer p{
+    margin-top:0.8rem;
+    color:var(--ink-soft);
+    font-size:0.85rem;
+    letter-spacing:0.05em;
+  }
+
+  @media (max-width:900px){
+    .flower-grid{ grid-template-columns:repeat(3, 1fr); }
+    .nav ul{ gap:1.2rem; }
+    .nav a{ font-size:0.68rem; }
+  }
+  @media (max-width:560px){
+    .flower-grid{ grid-template-columns:repeat(2, 1fr); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .petal, .branch-group{ animation:none !important; }
+  }

@@ -1,0 +1,12 @@
+{
+  "name": "blossom-boutique",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Blossom Boutique — a static single-page site for a handcrafted floral boutique.",
+  "scripts": {
+    "start": "serve ."
+  },
+  "devDependencies": {
+    "serve": "^14.2.6"
+  }
+}
