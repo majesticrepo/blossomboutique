@@ -177,6 +177,17 @@
     transform:scale(1.35);
     box-shadow:0 0 0 3px rgba(198,161,91,0.25);
   }
+  /* plain near-white fill is invisible against the paper/hero backdrop,
+     so give the white dot a gold ring to keep it readable as "white"
+     rather than a gap in the row */
+  .nav-dot-white{
+    background:#FFFFFF;
+    border-color:var(--gold);
+    box-shadow:0 1px 2px rgba(43,36,28,0.15), inset 0 0 0 1px rgba(43,36,28,0.06);
+  }
+  .nav-dot-white:hover{
+    box-shadow:0 0 0 3px rgba(198,161,91,0.25), inset 0 0 0 1px rgba(43,36,28,0.06);
+  }
 
   /* ---------- HERO (full-bleed scene) ---------- */
   .hero{
