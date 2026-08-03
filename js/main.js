@@ -212,6 +212,15 @@
     function makeId(){
       return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'r-' + Date.now() + '-' + Math.random().toString(36).slice(2);
     }
+
+    // ----- per-browser author id, so a customer can only delete reviews they themselves posted -----
+    const AUTHOR_KEY = 'bb_review_author_id';
+    let authorId = localStorage.getItem(AUTHOR_KEY);
+    if(!authorId){
+      authorId = makeId();
+      try{ localStorage.setItem(AUTHOR_KEY, authorId); }catch(e){}
+    }
+
     function loadReviews(){
       try{
         const raw = localStorage.getItem(STORAGE_KEY);
@@ -285,13 +294,14 @@
           : '';
         const reportedTag = r.reported ? '<span class="review-reported-tag">Reported</span>' : '';
         const editedTag = r.edited ? ' <span class="review-edited-tag">(edited)</span>' : '';
+        const isOwner = r.authorId && r.authorId === authorId;
         return '<article class="review-card' + (r.reported ? ' is-reported' : '') + '" data-id="' + r.id + '">'
           + '<div class="review-menu">'
           + '<button type="button" class="review-menu-btn" aria-haspopup="true" aria-expanded="false" aria-label="Review options">&#8942;</button>'
           + '<div class="review-menu-dropdown">'
           + '<button type="button" data-action="edit">Edit</button>'
           + '<button type="button" data-action="report"' + (r.reported ? ' disabled' : '') + '>' + (r.reported ? 'Reported' : 'Report') + '</button>'
-          + '<button type="button" data-action="delete" class="is-danger">Delete</button>'
+          + (isOwner ? '<button type="button" data-action="delete" class="is-danger">Delete</button>' : '')
           + '</div>'
           + '</div>'
           + '<div class="review-card-head">'
@@ -328,6 +338,42 @@
     // ----- media picker (attach photos/videos from the customer's device) -----
     const mediaInput = document.getElementById('reviewMedia');
     const feedback = document.getElementById('reviewFeedback');
+
+    // "Files" opens the picker as-is; the "+" button reveals Files/Videos/Photos
+    // shortcuts that scope the picker's accept type - choosing Photos or Videos
+    // is what lets the browser open straight to the device's gallery/camera roll.
+    const mediaPicker = document.getElementById('mediaPicker');
+    const mediaFilesBtn = document.getElementById('mediaFilesBtn');
+    const mediaAddBtn = document.getElementById('mediaAddBtn');
+    const mediaAddMenu = document.getElementById('mediaAddMenu');
+
+    function closeMediaMenu(){
+      mediaPicker.classList.remove('is-open');
+      mediaAddBtn.setAttribute('aria-expanded', 'false');
+    }
+    mediaFilesBtn.addEventListener('click', () => {
+      mediaInput.accept = 'image/*,video/*';
+      mediaInput.click();
+    });
+    mediaAddBtn.addEventListener('click', () => {
+      const willOpen = !mediaPicker.classList.contains('is-open');
+      closeMediaMenu();
+      if(willOpen){
+        mediaPicker.classList.add('is-open');
+        mediaAddBtn.setAttribute('aria-expanded', 'true');
+      }
+    });
+    mediaAddMenu.addEventListener('click', e => {
+      const btn = e.target.closest('button[data-accept]');
+      if(!btn) return;
+      mediaInput.accept = btn.dataset.accept;
+      closeMediaMenu();
+      mediaInput.click();
+    });
+    document.addEventListener('click', e => {
+      if(!e.target.closest('#mediaPicker')) closeMediaMenu();
+    });
+
     mediaInput.addEventListener('change', () => {
       const files = [...mediaInput.files];
       mediaInput.value = '';
@@ -429,6 +475,7 @@
       if(!review) return;
 
       if(actionBtn.dataset.action === 'delete'){
+        if(review.authorId !== authorId) return; // you can only delete your own reviews
         if(!window.confirm("Delete this review? This can't be undone.")) return;
         reviews = reviews.filter(r => r.id !== id);
         saveReviews(reviews);
@@ -469,7 +516,7 @@
       } else {
         reviews.unshift({
           id:makeId(), name, rating:selectedRating, text,
-          date:new Date().toISOString(), media:pendingMedia.slice(), reported:false
+          date:new Date().toISOString(), media:pendingMedia.slice(), reported:false, authorId
         });
       }
 
@@ -496,6 +543,26 @@
 
     renderSummary();
     renderList();
+
+    // ----- keep the page live: pick up reviews saved from another tab/window
+    // right away, and re-check storage every couple of minutes in case it
+    // was updated some other way. Never stomps on a review being typed. -----
+    const LIVE_REFRESH_MS = 2 * 60 * 1000;
+    function refreshFromStorage(){
+      const latest = loadReviews();
+      if(JSON.stringify(latest) === JSON.stringify(reviews)) return;
+      reviews = latest;
+      if(editingId && !reviews.some(r => r.id === editingId)){
+        resetForm();
+        exitEditMode();
+      }
+      renderSummary();
+      renderList();
+    }
+    window.addEventListener('storage', e => {
+      if(e.key === STORAGE_KEY) refreshFromStorage();
+    });
+    setInterval(refreshFromStorage, LIVE_REFRESH_MS);
   }
 
   const wrap = document.getElementById('heroPetals');
