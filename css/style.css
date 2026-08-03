@@ -41,15 +41,22 @@
   }
   .nav.scrolled{
     padding:14px 5vw;
+  }
+  .nav.scrolled:not(.on-hero){
     background:rgba(255,253,247,0.82);
     backdrop-filter:blur(6px);
     box-shadow:0 1px 0 var(--hair);
+  }
+  .nav.scrolled.on-hero{
+    background:rgba(20,10,10,0.22);
+    backdrop-filter:blur(6px);
   }
   .nav .brand{
     color:var(--gold-deep);
     font-size:1.3rem;
     letter-spacing:0.18em;
     text-transform:uppercase;
+    transition:color .5s ease;
   }
   .brand-with-mark{
     display:inline-flex;
@@ -60,7 +67,8 @@
     height:1.9em;
     width:auto;
     display:block;
-    filter:drop-shadow(0 1px 2px rgba(156,122,50,0.25));
+    filter:brightness(1) invert(0) drop-shadow(0 1px 2px rgba(156,122,50,0.25));
+    transition:filter .5s ease;
   }
   .nav ul{
     list-style:none;
@@ -77,7 +85,7 @@
     font-size:0.82rem;
     text-transform:uppercase;
     padding-bottom:4px;
-    transition:letter-spacing .3s ease, color .3s ease;
+    transition:letter-spacing .3s ease, color .5s ease;
   }
   .nav a::after{
     content:'';
@@ -85,7 +93,7 @@
     left:50%; bottom:0;
     width:0%; height:1px;
     background:var(--gold);
-    transition:all .35s cubic-bezier(.4,0,.2,1);
+    transition:width .35s cubic-bezier(.4,0,.2,1), background .5s ease;
     transform:translateX(-50%);
   }
   .nav a:hover{
@@ -93,6 +101,15 @@
     color:var(--gold);
   }
   .nav a:hover::after{ width:100%; }
+
+  /* nav sits over the hero photo: gold doesn't read clearly there, so
+     go white and transition smoothly back to gold once scrolled past it */
+  .nav.on-hero .brand,
+  .nav.on-hero a{ color:#fff; }
+  .nav.on-hero .brand-rose{
+    filter:brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0,0,0,0.35));
+  }
+  .nav.on-hero a::after{ background:#fff; }
 
   .nav-right{
     display:flex;
@@ -297,6 +314,67 @@
     margin:0 auto 0.9rem;
     border:2px solid rgba(0,0,0,0.06);
     box-shadow:0 3px 10px rgba(0,0,0,0.08);
+    transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease;
+  }
+  @media (hover:hover) and (pointer:fine){
+    .flower-item:hover .swatch{
+      transform:scale(1.28);
+      box-shadow:0 8px 20px rgba(0,0,0,0.2);
+    }
+  }
+
+  /* touch/tablet affordance in place of a hover cue */
+  .touch-hint{
+    display:none;
+    align-items:center;
+    justify-content:center;
+    gap:0.5rem;
+    margin:-2.2rem 0 2.4rem;
+    font-size:0.8rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--gold-deep);
+    opacity:0.85;
+  }
+  .touch-hint-arrow{
+    display:inline-block;
+    font-size:1rem;
+    animation:touch-hint-nudge 1.6s ease-in-out infinite;
+  }
+  @keyframes touch-hint-nudge{
+    0%,100%{ transform:translateX(0); }
+    50%{ transform:translateX(6px); }
+  }
+  @media (pointer:coarse){
+    .touch-hint{ display:flex; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .touch-hint-arrow{ animation:none; }
+  }
+
+  /* click-through burst used to transition a bloom into its detail page */
+  .flower-burst{
+    position:fixed;
+    top:0; left:0;
+    width:40px; height:40px;
+    border-radius:50%;
+    background:var(--gold);
+    transform:translate(-50%,-50%) scale(0);
+    opacity:0;
+    pointer-events:none;
+    z-index:400;
+    transition:transform .55s cubic-bezier(.2,.8,.2,1), opacity .35s ease;
+  }
+  .flower-burst.burst-grow{
+    transform:translate(-50%,-50%) scale(60);
+    opacity:1;
+  }
+  .flower-burst.burst-fade{
+    opacity:0;
+    transition:transform .55s cubic-bezier(.2,.8,.2,1), opacity .45s ease .1s;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .flower-burst{ transition:opacity .3s ease; }
   }
   .colour-name{
     font-size:0.72rem;
@@ -435,6 +513,10 @@
     filter:drop-shadow(0 22px 34px rgba(0,0,0,0.3));
   }
   @keyframes orb-float{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-14px); } }
+  a.bloom-link{ transition:transform .35s cubic-bezier(.2,.8,.2,1); }
+  @media (hover:hover) and (pointer:fine){
+    a.bloom-link:hover{ transform:scale(1.12); }
+  }
 
   .page-text{
     flex:1 1 360px;
@@ -516,7 +598,6 @@
     z-index:0;
   }
   .detail-page.dark-text{ color:var(--ink); }
-  .detail-page.detail-sakura{ background:#000; }
 
   .detail-inner{
     position:relative;
@@ -570,28 +651,6 @@
     color:var(--gold-deep);
   }
 
-  /* sakura detail page: full-bleed painting with translucent petals */
-  .detail-bg-photo{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    z-index:0;
-  }
-  .detail-scrim{
-    position:absolute;
-    inset:0;
-    background:linear-gradient(180deg, rgba(20,10,10,0.15) 0%, rgba(20,10,10,0.55) 100%);
-    z-index:1;
-  }
-  .detail-petals{
-    position:absolute;
-    inset:0;
-    overflow:hidden;
-    z-index:2;
-    pointer-events:none;
-  }
   .petal.soft{
     animation-name:fall-soft;
     filter:blur(0.5px);
@@ -602,8 +661,6 @@
     80%{ opacity:0.3; }
     100%{ transform:translate(var(--drift,60px), var(--fallDist,520px)) rotate(430deg); opacity:0; }
   }
-  .detail-sakura .detail-inner{ color:#fff; }
-  .detail-sakura .detail-body::first-letter{ color:#F7D5E1; }
 
 
   .about{

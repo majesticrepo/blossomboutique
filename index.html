@@ -222,7 +222,7 @@
   </defs>
 </svg>
 
-<nav class="nav" id="nav">
+<nav class="nav on-hero" id="nav">
   <span class="brand brand-with-mark"><span class="brand-word">Blossom</span><img class="brand-rose" src="images/logo-rose.png" alt=""><span class="brand-word">Boutique</span></span>
   <div class="nav-right">
     <ul>
@@ -286,6 +286,8 @@
     <span class="section-eyebrow">The Collection</span>
     <h2 class="section-title">A bloom for every <em>shade</em></h2>
   </div>
+
+  <p class="touch-hint"><span class="touch-hint-arrow">&rarr;</span> Press a bloom to learn more</p>
 
   <div class="flower-grid">
     <a class="flower-item c-red" href="#page-red"><div class="swatch"></div><div class="colour-name">Red</div><div class="flower-name">Rose</div></a>
@@ -812,10 +814,8 @@ Our signature bloom, wrapped in gold from root to tip.</p>
   </div>
 </section>
 
-<section class="detail-page detail-sakura" id="detail-pink" style="--c:#E39FB0;">
-  <img class="detail-bg-photo" src="images/rose-hero.png" alt="Cherry blossom tree">
-  <div class="detail-scrim"></div>
-  <div class="detail-petals" id="sakuraPetals"></div>
+<section class="detail-page dark-text" id="detail-pink" style="--c:#E39FB0; --f:hue-rotate(348deg) saturate(0.6) brightness(1.18);">
+  <img class="detail-bg" src="images/rose-detail.jpg" alt="">
   <a class="back-link" href="#page-pink">&larr; Back to Pink</a>
   <div class="detail-inner">
     <span class="detail-eyebrow">Pink &middot; Sakura</span>
@@ -839,6 +839,8 @@ Our signature bloom, wrapped in gold from root to tip.</p>
   <span class="brand wave-text">Blossom Boutique</span>
   <p class="wave-text">Contact details coming soon</p>
 </footer>
+
+<div class="flower-burst" id="flowerBurst"></div>
 
 <script src="js/main.js" defer></script>
 
