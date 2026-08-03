@@ -193,6 +193,129 @@
     {x:48,y:34},{x:58,y:38},{x:66,y:30},{x:10,y:44},{x:42,y:48},{x:54,y:46}
   ];
 
+  // ----- Reviews page: star-rating picker, submit-and-store, and the
+  // average-rating summary at the top. No backend, so submitted reviews
+  // are kept in localStorage alongside a handful of seed reviews so the
+  // page (and the "stars we're rated" summary) never looks empty. -----
+  const reviewForm = document.getElementById('reviewForm');
+  if(reviewForm){
+    const STORAGE_KEY = 'bb_reviews';
+
+    const seedReviews = [
+      { name:'Amara O.', rating:5, text:"The Champagne Rose box was even more stunning in person - felt like unwrapping a piece of jewellery. Will absolutely order again.", date:'2026-06-14T10:00:00.000Z' },
+      { name:'Priya K.', rating:5, text:'Ordered the Sakura arrangement for a birthday and it arrived perfectly fresh. The gold box made it feel extra special.', date:'2026-05-02T10:00:00.000Z' },
+      { name:'Daniel R.', rating:4, text:'Beautiful flowers and fast delivery. Wish there were a couple more size options, but the quality made up for it.', date:'2026-03-21T10:00:00.000Z' }
+    ];
+
+    function loadStoredReviews(){
+      try{
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      }catch(e){
+        return [];
+      }
+    }
+    function saveStoredReviews(list){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    }
+
+    function allReviews(){
+      return loadStoredReviews().concat(seedReviews);
+    }
+
+    function formatDate(iso){
+      return new Date(iso).toLocaleDateString(undefined, { year:'numeric', month:'long', day:'numeric' });
+    }
+
+    function renderSummary(){
+      const reviews = allReviews();
+      const count = reviews.length;
+      const average = count ? reviews.reduce((sum, r) => sum + r.rating, 0) / count : 0;
+      document.getElementById('ratingStars').style.setProperty('--rating', average);
+      document.getElementById('ratingAverage').textContent = average.toFixed(1);
+      document.getElementById('ratingCount').textContent =
+        'Based on ' + count + (count === 1 ? ' review' : ' reviews');
+    }
+
+    function renderList(){
+      const list = document.getElementById('reviewList');
+      const reviews = allReviews();
+      if(!reviews.length){
+        list.innerHTML = '<p class="review-list-empty">No reviews yet - be the first to share yours.</p>';
+        return;
+      }
+      list.innerHTML = reviews.map(r => {
+        const filled = '★'.repeat(r.rating);
+        const empty = '<span class="star-empty">' + '★'.repeat(5 - r.rating) + '</span>';
+        return '<article class="review-card">'
+          + '<div class="review-card-head">'
+          + '<span class="review-card-name">' + escapeHtml(r.name) + '</span>'
+          + '<span class="review-card-date">' + formatDate(r.date) + '</span>'
+          + '</div>'
+          + '<div class="review-card-stars">' + filled + empty + '</div>'
+          + '<p class="review-card-text">' + escapeHtml(r.text) + '</p>'
+          + '</article>';
+      }).join('');
+    }
+
+    function escapeHtml(str){
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // ----- star picker -----
+    const starPicker = document.getElementById('starPicker');
+    const starButtons = [...starPicker.querySelectorAll('.star-btn')];
+    let selectedRating = 0;
+
+    function paintStars(uptoValue){
+      starButtons.forEach(btn => {
+        btn.classList.toggle('is-active', Number(btn.dataset.value) <= uptoValue);
+      });
+    }
+    starButtons.forEach(btn => {
+      btn.addEventListener('mouseenter', () => paintStars(Number(btn.dataset.value)));
+      btn.addEventListener('click', () => {
+        selectedRating = Number(btn.dataset.value);
+        starButtons.forEach(b => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
+        paintStars(selectedRating);
+      });
+    });
+    starPicker.addEventListener('mouseleave', () => paintStars(selectedRating));
+
+    // ----- submit -----
+    const feedback = document.getElementById('reviewFeedback');
+    reviewForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const name = document.getElementById('reviewName').value.trim();
+      const text = document.getElementById('reviewText').value.trim();
+
+      if(!name || !text || !selectedRating){
+        feedback.textContent = 'Please add your name, a rating, and a few words, then send again.';
+        feedback.classList.add('is-error');
+        return;
+      }
+
+      const stored = loadStoredReviews();
+      stored.unshift({ name, rating:selectedRating, text, date:new Date().toISOString() });
+      saveStoredReviews(stored);
+
+      reviewForm.reset();
+      selectedRating = 0;
+      starButtons.forEach(b => b.setAttribute('aria-pressed', 'false'));
+      paintStars(0);
+
+      feedback.classList.remove('is-error');
+      feedback.textContent = 'Thank you - your review has been posted!';
+
+      renderSummary();
+      renderList();
+    });
+
+    renderSummary();
+    renderList();
+  }
+
   const wrap = document.getElementById('heroPetals');
   const petalsPerSpawn = 34;
   for(let i=0; i<petalsPerSpawn; i++){

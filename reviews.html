@@ -40,7 +40,52 @@
   </div>
 </nav>
 
-<section style="min-height:100vh;"></section>
+<section class="reviews-page" id="reviews" style="padding-top:16vh; min-height:100vh;">
+
+  <div class="section-head">
+    <span class="section-eyebrow">Reviews</span>
+    <h2 class="section-title">What our <em>customers</em> say</h2>
+  </div>
+
+  <div class="rating-summary">
+    <div class="stars-static" id="ratingStars"></div>
+    <div class="rating-summary-value"><span id="ratingAverage">0.0</span> <em>/ 5</em></div>
+    <div class="rating-summary-count" id="ratingCount">Based on 0 reviews</div>
+  </div>
+
+  <div class="review-form-wrap">
+    <form class="review-form" id="reviewForm" novalidate>
+      <h3 class="review-form-title">Leave a review</h3>
+
+      <label class="review-field">
+        <span>Your name</span>
+        <input type="text" id="reviewName" name="name" placeholder="Jane Smith" maxlength="60" required>
+      </label>
+
+      <div class="review-field">
+        <span>Your rating</span>
+        <div class="star-picker" id="starPicker" role="radiogroup" aria-label="Rating out of 5 stars">
+          <button type="button" class="star-btn" data-value="1" aria-label="1 star" aria-pressed="false">★</button>
+          <button type="button" class="star-btn" data-value="2" aria-label="2 stars" aria-pressed="false">★</button>
+          <button type="button" class="star-btn" data-value="3" aria-label="3 stars" aria-pressed="false">★</button>
+          <button type="button" class="star-btn" data-value="4" aria-label="4 stars" aria-pressed="false">★</button>
+          <button type="button" class="star-btn" data-value="5" aria-label="5 stars" aria-pressed="false">★</button>
+        </div>
+      </div>
+
+      <label class="review-field">
+        <span>Your review</span>
+        <textarea id="reviewText" name="text" rows="4" placeholder="Tell us about your experience..." maxlength="600" required></textarea>
+      </label>
+
+      <button type="submit" class="review-submit">Send Review</button>
+      <p class="review-feedback" id="reviewFeedback" aria-live="polite"></p>
+    </form>
+  </div>
+
+  <div class="review-list" id="reviewList"></div>
+
+</section>
 
 <footer>
   <span class="brand wave-text">Blossom Boutique</span>
