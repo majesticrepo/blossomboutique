@@ -28,26 +28,28 @@
   updateNavState();
 
   // ----- Hamburger menu: only present below the desktop breakpoint, but
-  // wired up everywhere so it works if the viewport is resized down -----
+  // wired up everywhere so it works if the viewport is resized down.
+  // The colour dots stay visible in the bar at all times; only the text
+  // links (#navLinks) collapse behind the toggle. -----
   const navToggle = document.getElementById('navToggle');
-  const navRight = document.getElementById('navRight');
-  if(navToggle && navRight){
+  const navLinks = document.getElementById('navLinks');
+  if(navToggle && navLinks){
     function closeMenu(){
-      navRight.classList.remove('open');
+      navLinks.classList.remove('open');
       navToggle.classList.remove('is-open');
       navToggle.setAttribute('aria-expanded', 'false');
       document.body.classList.remove('menu-open');
     }
     function openMenu(){
-      navRight.classList.add('open');
+      navLinks.classList.add('open');
       navToggle.classList.add('is-open');
       navToggle.setAttribute('aria-expanded', 'true');
       document.body.classList.add('menu-open');
     }
     navToggle.addEventListener('click', () => {
-      if(navRight.classList.contains('open')) closeMenu(); else openMenu();
+      if(navLinks.classList.contains('open')) closeMenu(); else openMenu();
     });
-    navRight.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+    navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
     window.addEventListener('keydown', e => { if(e.key === 'Escape') closeMenu(); });
     window.addEventListener('resize', () => { if(window.innerWidth > 900) closeMenu(); });
   }
