@@ -1,3 +1,16 @@
+// Split footer text into per-letter spans so CSS can stagger a wave animation
+  document.querySelectorAll('.wave-text').forEach(el => {
+    const text = el.textContent;
+    el.textContent = '';
+    [...text].forEach((char, i) => {
+      const span = document.createElement('span');
+      span.className = 'letter' + (char === ' ' ? ' is-space' : '');
+      span.textContent = char === ' ' ? ' ' : char;
+      span.style.animationDelay = (i * 0.06) + 's';
+      el.appendChild(span);
+    });
+  });
+
 // nav shrink on scroll
   const nav = document.getElementById('nav');
   window.addEventListener('scroll', () => {

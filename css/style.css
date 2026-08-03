@@ -648,6 +648,28 @@
     font-size:0.85rem;
     letter-spacing:0.05em;
   }
+  .wave-text{
+    display:inline-flex;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+  footer p.wave-text{
+    display:flex;
+  }
+  .wave-text .letter{
+    display:inline-block;
+    animation:letterWave 2.4s ease-in-out infinite;
+  }
+  .wave-text .letter.is-space{
+    width:0.35em;
+  }
+  @keyframes letterWave{
+    0%, 100%{ transform:translateY(0); }
+    50%{ transform:translateY(-0.3em); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .wave-text .letter{ animation:none; }
+  }
 
   @media (max-width:900px){
     .flower-grid{ grid-template-columns:repeat(3, 1fr); }
