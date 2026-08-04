@@ -67,6 +67,11 @@
     function showOverlayPage(id){
       overlay.style.display = 'block';
       document.body.classList.add('scroll-locked');
+      // The bar now renders above the overlay on mobile (see CSS) so the
+      // toggle stays reachable; force its opaque/gold look regardless of
+      // scroll position so it reads clearly against every colour page.
+      nav.classList.add('scrolled');
+      nav.classList.remove('on-hero');
       overlayPages.forEach(p => {
         const isMatch = p.id === id;
         p.style.display = isMatch ? 'flex' : 'none';
@@ -85,6 +90,7 @@
     function hideColourOverlay(){
       overlay.style.display = 'none';
       document.body.classList.remove('scroll-locked');
+      updateNavState();
     }
 
     function handleHash(){
@@ -101,21 +107,27 @@
 
     // Prevent the browser's own anchor-jump for swatch/photo links; we handle
     // showing/hiding entirely ourselves so the background never scrolls.
+    // "Back to Products" links point at the real products.html page rather
+    // than a same-page hash, so those are left alone to navigate normally.
     document.querySelectorAll('a.nav-dot, a.back-link').forEach(link => {
+      const href = link.getAttribute('href');
+      if(!href.startsWith('#')) return;
       link.addEventListener('click', e => {
         e.preventDefault();
-        window.location.hash = link.getAttribute('href').replace('#', '');
+        window.location.hash = href.replace('#', '');
       });
     });
   }
 
-  // ----- Bloom colour palette, shared by the cursor tint and the click burst.
-  // White is mapped to the site's gold accent rather than its literal near-
-  // white hex, since a white-on-white cursor/outline would be invisible -----
+  // ----- Bloom colour palette, the cursor tint, and the click-burst transition
+  // all only make sense where the colour-overlay markup exists (index.html) -
+  // elsewhere (including the products page) the same swatch links just
+  // navigate as plain browser links back to index.html#page-... -----
+  if(overlay){
   const bloomPalette = {
     red:'#C0392B', orange:'#D96C2B', yellow:'#DDAF35', green:'#6B8F52',
     blue:'#5F8DBF', purple:'#8B6FA8', pink:'#E39FB0', brown:'#7B5A3E',
-    black:'#2A2622', white:'#C6A15B', beige:'#D8C7A8', gold:'#9C7A32'
+    black:'#2A2622', white:'#FFFFFF', beige:'#D8C7A8', gold:'#9C7A32'
   };
 
   function bloomNameFromLink(link){
@@ -138,8 +150,11 @@
   if(canHoverWithMouse){
     document.querySelectorAll('a.flower-item, a.bloom-link').forEach(link => {
       const hex = bloomColour(link);
+      // A white ring on a white fill would be invisible, so white gets a
+      // gold ring instead - every other colour keeps its white ring.
+      const ringColour = hex === '#FFFFFF' ? '#C6A15B' : 'white';
       const cursorSvg = "<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30'>"
-        + "<circle cx='15' cy='15' r='11' fill='" + hex + "' stroke='white' stroke-width='2.5'/></svg>";
+        + "<circle cx='15' cy='15' r='11' fill='" + hex + "' stroke='" + ringColour + "' stroke-width='2.5'/></svg>";
       const cursorUrl = 'url("data:image/svg+xml,' + encodeURIComponent(cursorSvg) + '") 15 15, pointer';
       link.addEventListener('mouseenter', () => { link.style.cursor = cursorUrl; });
       link.addEventListener('mouseleave', () => { link.style.cursor = ''; });
@@ -162,9 +177,13 @@
     }
     const icon = link.querySelector('.swatch, .cartoon-flower') || link;
     const rect = icon.getBoundingClientRect();
+    const hex = bloomColour(link);
     burst.style.left = (rect.left + rect.width / 2) + 'px';
     burst.style.top = (rect.top + rect.height / 2) + 'px';
-    burst.style.background = bloomColour(link);
+    burst.style.background = hex;
+    // White needs a gold ring to stay visible while it grows over the
+    // ivory page background - every other colour has enough contrast on its own.
+    burst.classList.toggle('burst-white', hex === '#FFFFFF');
     burst.classList.remove('burst-fade');
     void burst.offsetWidth; // restart the transition
     burst.classList.add('burst-grow');
@@ -184,6 +203,7 @@
       triggerBloomBurst(link, link.getAttribute('href').replace('#', ''));
     });
   });
+  } // if(overlay)
 
   // Hero is now a full-bleed scene, so petals spread across the whole
   // photo rather than one smaller canopy box.
@@ -194,19 +214,29 @@
   ];
 
   // ----- Reviews page: star-rating picker, submit/edit/delete/report, and
-  // the average-rating summary at the top. No backend, so every review -
-  // seed and submitted alike - lives in localStorage as one editable list,
-  // each with a stable id so cards can be deleted or updated in place. -----
+  // the average-rating summary at the top. Reviews live in localStorage as
+  // the always-available copy, each with a stable id so cards can be
+  // deleted or updated in place. When REMOTE_REVIEWS_URL below is set to a
+  // real endpoint, the same list is also synced there so every visitor sees
+  // the same reviews, refreshed on a timer - see syncFromRemote(). -----
   const reviewForm = document.getElementById('reviewForm');
   if(reviewForm){
     const STORAGE_KEY = 'bb_reviews_v2';
     const MAX_MEDIA_PER_REVIEW = 4;
     const MAX_FILE_BYTES = 4 * 1024 * 1024; // keep individual files sane for localStorage
 
+    // Set this to a real endpoint to make reviews shared across every visitor
+    // instead of just the browser that posted them (see README for how to
+    // get one, e.g. a free npoint.io bin). Left blank, reviews stay
+    // per-browser exactly as before. Expected contract: GET returns the
+    // reviews array (or {reviews:[...]}) as JSON; POST with a JSON array
+    // body overwrites it.
+    const REMOTE_REVIEWS_URL = '';
+
     const defaultSeedReviews = [
-      { id:'seed-1', name:'Amara O.', rating:5, text:"The Champagne Rose box was even more stunning in person - felt like unwrapping a piece of jewellery. Will absolutely order again.", date:'2026-06-14T10:00:00.000Z', media:[], reported:false },
-      { id:'seed-2', name:'Priya K.', rating:5, text:'Ordered the Sakura arrangement for a birthday and it arrived perfectly fresh. The gold box made it feel extra special.', date:'2026-05-02T10:00:00.000Z', media:[], reported:false },
-      { id:'seed-3', name:'Daniel R.', rating:4, text:'Beautiful flowers and fast delivery. Wish there were a couple more size options, but the quality made up for it.', date:'2026-03-21T10:00:00.000Z', media:[], reported:false }
+      { id:'seed-1', name:'Amara O.', rating:5, text:"The Champagne Fan box was even more stunning in person - felt like unwrapping a piece of jewellery. Will absolutely order again.", date:'2026-06-14T10:00:00.000Z', media:[], reported:false },
+      { id:'seed-2', name:'Priya K.', rating:5, text:'Ordered the Sakura Fan for a birthday and it arrived perfectly wrapped. The gold box made it feel extra special.', date:'2026-05-02T10:00:00.000Z', media:[], reported:false },
+      { id:'seed-3', name:'Daniel R.', rating:4, text:'Beautiful craftsmanship and fast delivery. Wish there were a couple more size options, but the quality made up for it.', date:'2026-03-21T10:00:00.000Z', media:[], reported:false }
     ];
 
     function makeId(){
@@ -237,9 +267,33 @@
     function saveReviews(list){
       try{
         localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+        pushRemote(list); // best-effort; localStorage above is the source of truth if this fails
         return true;
       }catch(e){
         return false;
+      }
+    }
+
+    // ----- optional shared backend: pushes/pulls the same list everyone else
+    // sees. Silently no-ops when REMOTE_REVIEWS_URL is blank. -----
+    function pushRemote(list){
+      if(!REMOTE_REVIEWS_URL) return;
+      fetch(REMOTE_REVIEWS_URL, {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json' },
+        body:JSON.stringify(list)
+      }).catch(() => {}); // offline/unreachable - localStorage still has it
+    }
+    async function fetchRemote(){
+      if(!REMOTE_REVIEWS_URL) return null;
+      try{
+        const res = await fetch(REMOTE_REVIEWS_URL, { cache:'no-store' });
+        if(!res.ok) return null;
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : data.reviews;
+        return Array.isArray(list) ? list : null;
+      }catch(e){
+        return null;
       }
     }
 
@@ -296,6 +350,9 @@
           ? '<div class="review-card-media">' + r.media.map((m, i) => mediaThumbHtml(m, i, false)).join('') + '</div>'
           : '';
         const reportedTag = r.reported ? '<span class="review-reported-tag">Reported</span>' : '';
+        const reportReason = (r.reported && r.reportReason)
+          ? '<div class="review-report-reason">Reported for: ' + escapeHtml(r.reportReason) + '</div>'
+          : '';
         const editedTag = r.edited ? ' <span class="review-edited-tag">(edited)</span>' : '';
         const isOwner = r.authorId && r.authorId === authorId;
         return '<article class="review-card' + (r.reported ? ' is-reported' : '') + '" data-id="' + r.id + '">'
@@ -313,6 +370,7 @@
           + '</div>'
           + '<div class="review-card-stars">' + filled + empty + '</div>'
           + '<p class="review-card-text">' + escapeHtml(r.text) + '</p>'
+          + reportReason
           + media
           + '</article>';
       }).join('');
@@ -486,9 +544,8 @@
         renderSummary();
         renderList();
       } else if(actionBtn.dataset.action === 'report'){
-        review.reported = true;
-        saveReviews(reviews);
-        renderList();
+        closeAllMenus();
+        openReportModal(id);
       } else if(actionBtn.dataset.action === 'edit'){
         if(review.authorId !== authorId) return; // you can only edit your own reviews
         closeAllMenus();
@@ -498,6 +555,40 @@
     document.addEventListener('click', e => {
       if(!e.target.closest('.review-menu')) closeAllMenus();
     });
+
+    // ----- report modal: pick a reason before a review gets flagged -----
+    const reportModal = document.getElementById('reportModal');
+    let reportTargetId = null;
+    function openReportModal(id){
+      reportTargetId = id;
+      reportModal.querySelectorAll('input[name="reportReason"]').forEach(i => { i.checked = false; });
+      document.getElementById('reportModalError').hidden = true;
+      reportModal.hidden = false;
+    }
+    function closeReportModal(){
+      reportModal.hidden = true;
+      reportTargetId = null;
+    }
+    if(reportModal){
+      document.getElementById('reportModalCancel').addEventListener('click', closeReportModal);
+      document.getElementById('reportModalBackdrop').addEventListener('click', closeReportModal);
+      window.addEventListener('keydown', e => { if(e.key === 'Escape' && !reportModal.hidden) closeReportModal(); });
+      document.getElementById('reportModalSubmit').addEventListener('click', () => {
+        const chosen = reportModal.querySelector('input[name="reportReason"]:checked');
+        if(!chosen){
+          document.getElementById('reportModalError').hidden = false;
+          return;
+        }
+        const review = reviews.find(r => r.id === reportTargetId);
+        if(review){
+          review.reported = true;
+          review.reportReason = chosen.value;
+          saveReviews(reviews);
+          renderList();
+        }
+        closeReportModal();
+      });
+    }
 
     // ----- submit: create a new review, or save changes to one being edited -----
     reviewForm.addEventListener('submit', e => {
@@ -548,14 +639,10 @@
     renderSummary();
     renderList();
 
-    // ----- keep the page live: pick up reviews saved from another tab/window
-    // right away, and re-check storage every couple of minutes in case it
-    // was updated some other way. Never stomps on a review being typed. -----
-    const LIVE_REFRESH_MS = 2 * 60 * 1000;
-    function refreshFromStorage(){
-      const latest = loadReviews();
-      if(JSON.stringify(latest) === JSON.stringify(reviews)) return;
-      reviews = latest;
+    // ----- keep the page live -----
+    function applyIncomingList(list){
+      if(JSON.stringify(list) === JSON.stringify(reviews)) return;
+      reviews = list;
       if(editingId && !reviews.some(r => r.id === editingId)){
         resetForm();
         exitEditMode();
@@ -563,15 +650,35 @@
       renderSummary();
       renderList();
     }
+    // Same-device multi-tab: pick up reviews saved from another tab right away.
+    function refreshFromStorage(){
+      applyIncomingList(loadReviews());
+    }
     window.addEventListener('storage', e => {
       if(e.key === STORAGE_KEY) refreshFromStorage();
     });
-    setInterval(refreshFromStorage, LIVE_REFRESH_MS);
+
+    if(REMOTE_REVIEWS_URL){
+      // Every visitor: pull the shared list on load, then every 60s so a
+      // review posted by someone else shows up for everyone within a minute.
+      async function refreshFromRemote(){
+        const remote = await fetchRemote();
+        if(!remote) return;
+        applyIncomingList(remote);
+        try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(remote)); }catch(e){}
+      }
+      refreshFromRemote();
+      setInterval(refreshFromRemote, 60 * 1000);
+    } else {
+      // No shared backend configured - fall back to the local-only refresh
+      // so at least this browser's own tabs stay in sync with each other.
+      setInterval(refreshFromStorage, 2 * 60 * 1000);
+    }
   }
 
   const wrap = document.getElementById('heroPetals');
   const petalsPerSpawn = 34;
-  for(let i=0; i<petalsPerSpawn; i++){
+  for(let i=0; wrap && i<petalsPerSpawn; i++){
     const p = document.createElement('div');
     p.className = 'petal soft';
     const origin = heroCanopyPoints[Math.floor(Math.random()*heroCanopyPoints.length)];

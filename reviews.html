@@ -15,7 +15,7 @@
   <div class="nav-right" id="navRight">
     <ul id="navLinks">
       <li><a href="index.html#home">Home</a></li>
-      <li><a href="index.html#products">Products</a></li>
+      <li><a href="products.html">Products</a></li>
       <li><a href="about.html">About Us</a></li>
       <li><a href="reviews.html">Reviews</a></li>
       <li><a href="contact.html">Contacts</a></li>
@@ -103,9 +103,29 @@
 
 </section>
 
+<div class="report-modal" id="reportModal" hidden>
+  <div class="report-modal-backdrop" id="reportModalBackdrop"></div>
+  <div class="report-modal-panel" role="dialog" aria-modal="true" aria-labelledby="reportModalTitle">
+    <h3 id="reportModalTitle">Report this review</h3>
+    <p class="report-modal-sub">Let us know what's wrong with it.</p>
+    <div class="report-reason-list" id="reportReasonList">
+      <label class="report-reason"><input type="radio" name="reportReason" value="Spam or advertising"><span>Spam or advertising</span></label>
+      <label class="report-reason"><input type="radio" name="reportReason" value="Inappropriate or offensive"><span>Inappropriate or offensive</span></label>
+      <label class="report-reason"><input type="radio" name="reportReason" value="Fake or misleading"><span>Fake or misleading</span></label>
+      <label class="report-reason"><input type="radio" name="reportReason" value="Harassment or hate speech"><span>Harassment or hate speech</span></label>
+      <label class="report-reason"><input type="radio" name="reportReason" value="Other"><span>Other</span></label>
+    </div>
+    <p class="report-modal-error" id="reportModalError" hidden>Please choose a reason first.</p>
+    <div class="report-modal-actions">
+      <button type="button" class="review-cancel-edit" id="reportModalCancel">Cancel</button>
+      <button type="button" class="review-submit" id="reportModalSubmit">Submit report</button>
+    </div>
+  </div>
+</div>
+
 <footer>
   <span class="brand wave-text">Blossom Boutique</span>
-  <p class="wave-text">Handcrafted florals, wrapped with care</p>
+  <p class="wave-text">Handcrafted fans, wrapped with care</p>
 </footer>
 
 <script src="js/main.js" defer></script>
