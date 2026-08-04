@@ -546,11 +546,20 @@
     width:100%;
     height:200px;
     overflow:hidden;
-    background:var(--c);
     border-radius:12px;
   }
-  .product-card-photo::before,
-  .product-card-photo::after{
+  /* Cartoon: bold colour block with a patterned fold at each edge -----
+     Elegant: the same colour rendered as fine, evenly-spaced silk pleats
+     with a soft top-to-bottom sheen instead - swapped by the Cartoon/
+     Elegant toggle at the top of the products page (data-style-img) -----*/
+  .product-card-photo-cartoon,
+  .product-card-photo-elegant{
+    position:absolute;
+    inset:0;
+    background:var(--c);
+  }
+  .product-card-photo-cartoon::before,
+  .product-card-photo-cartoon::after{
     content:'';
     position:absolute;
     top:0; bottom:0;
@@ -558,8 +567,16 @@
     background-image:repeating-linear-gradient(45deg, rgba(255,255,255,0.4) 0 2px, transparent 2px 9px);
     opacity:0.55;
   }
-  .product-card-photo::before{ left:0; }
-  .product-card-photo::after{ right:0; }
+  .product-card-photo-cartoon::before{ left:0; }
+  .product-card-photo-cartoon::after{ right:0; }
+  .product-card-photo-elegant{
+    background-image:
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.32) 0 1px, transparent 1px 14px),
+      linear-gradient(180deg,
+        color-mix(in srgb, var(--c) 55%, white) 0%,
+        var(--c) 55%,
+        color-mix(in srgb, var(--c) 65%, black) 100%);
+  }
   .product-card.is-light .product-card-photo{
     border:1.5px solid var(--gold);
     box-shadow:inset 0 0 0 1px rgba(43,36,28,0.06);
