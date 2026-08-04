@@ -1141,13 +1141,13 @@
       });
     });
 
-    // ----- Cartoon/Elegant fan-style toggle: each product page has its own
-    // toggle and two overlaid <svg> images (data-style-img="cartoon"/"elegant") -----
-    productPages.forEach(page => {
-      const toggle = page.querySelector('.fan-style-toggle');
-      if(!toggle) return;
-      const buttons = toggle.querySelectorAll('.fan-style-btn');
-      const images = page.querySelectorAll('[data-style-img]');
+    // ----- Cartoon/Elegant fan-style toggle: one control at the top of the
+    // products listing switches every product's pair of overlaid <svg>
+    // images (data-style-img="cartoon"/"elegant") at once -----
+    const globalStyleToggle = document.querySelector('.fan-style-toggle-row .fan-style-toggle');
+    if(globalStyleToggle){
+      const buttons = globalStyleToggle.querySelectorAll('.fan-style-btn');
+      const images = document.querySelectorAll('[data-style-img]');
       buttons.forEach(btn => {
         btn.addEventListener('click', () => {
           const style = btn.dataset.style;
@@ -1161,5 +1161,5 @@
           });
         });
       });
-    });
+    }
   }

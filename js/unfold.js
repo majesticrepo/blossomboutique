@@ -19,8 +19,16 @@
 
   video.removeAttribute('controls');
 
+  // Raw scroll position updates in discrete jumps (and video seeking itself
+  // takes a beat to land on a keyframe), so snapping currentTime straight to
+  // scroll reads as jittery. Instead we track where scroll WANTS the video to
+  // be (targetProgress) and let a value we actually render (shownProgress)
+  // ease toward it every frame - a standard scroll-scrubbing smoothing trick
+  // that trades a few ms of lag for a fluid, non-jumpy feel.
   let lastProgress = 0;
-  let ticking = false;
+  let targetProgress = 0;
+  let shownProgress = 0;
+  const EASE = 0.12;
 
   function setCaption(progress, direction){
     if(progress <= 0.02){
@@ -38,37 +46,41 @@
     }
   }
 
-  function update(){
-    ticking = false;
+  function readScroll(){
     const sceneHeight = scene.offsetHeight;
     const scrollable = sceneHeight - window.innerHeight;
     const rect = scene.getBoundingClientRect();
-    let progress = scrollable > 0 ? (-rect.top) / scrollable : 0;
-    progress = Math.min(1, Math.max(0, progress));
+    const progress = scrollable > 0 ? (-rect.top) / scrollable : 0;
+    targetProgress = Math.min(1, Math.max(0, progress));
+  }
+
+  function frame(){
+    shownProgress += (targetProgress - shownProgress) * EASE;
+    if(Math.abs(targetProgress - shownProgress) < 0.0006){
+      shownProgress = targetProgress;
+    }
 
     const duration = video.duration;
     if(duration > 0 && !isNaN(duration)){
-      const target = progress * duration;
-      if(Math.abs(video.currentTime - target) > 0.008){
+      const target = shownProgress * duration;
+      if(Math.abs(video.currentTime - target) > 0.004){
         try{ video.currentTime = target; }catch(e){}
       }
     }
 
-    progressFill.style.width = (progress * 100) + '%';
+    progressFill.style.width = (shownProgress * 100) + '%';
 
-    const direction = progress === lastProgress ? null : (progress > lastProgress ? 'down' : 'up');
-    setCaption(progress, direction || (progress < 0.5 ? 'down' : 'up'));
-    lastProgress = progress;
+    const direction = shownProgress === lastProgress ? null : (shownProgress > lastProgress ? 'down' : 'up');
+    setCaption(shownProgress, direction || (shownProgress < 0.5 ? 'down' : 'up'));
+    lastProgress = shownProgress;
+
+    requestAnimationFrame(frame);
   }
 
-  function onScroll(){
-    if(!ticking){
-      requestAnimationFrame(update);
-      ticking = true;
-    }
-  }
-
-  video.addEventListener('loadedmetadata', update);
+  video.addEventListener('loadedmetadata', () => {
+    readScroll();
+    shownProgress = targetProgress;
+  });
 
   // iOS Safari only paints seeked frames reliably once the video has actually
   // started decoding once, so prime it with a play-then-immediate-pause.
@@ -79,7 +91,9 @@
     video.pause();
   }
 
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll);
-  update();
+  window.addEventListener('scroll', readScroll, { passive: true });
+  window.addEventListener('resize', readScroll);
+  readScroll();
+  shownProgress = targetProgress;
+  requestAnimationFrame(frame);
 })();
