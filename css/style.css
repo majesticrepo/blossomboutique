@@ -2039,3 +2039,137 @@
   .checkout-success-home{
     text-decoration:none;
   }
+
+  /* ---------- THE UNFOLD (scroll-scrubbed fan assembly demo) ---------- */
+  .unfold-intro{
+    max-width:640px;
+    margin:0 auto;
+    padding:18vh 6vw 4vh;
+    text-align:center;
+  }
+  .unfold-intro-sub{
+    margin-top:1.4rem;
+    font-size:1.02rem;
+    line-height:1.85;
+    color:var(--ink-soft);
+    font-weight:500;
+  }
+  .unfold-loop-card{
+    max-width:340px;
+    margin:3rem auto 2rem;
+    border-radius:20px;
+    overflow:hidden;
+    border:1px solid var(--hair);
+    background:var(--paper);
+    box-shadow:0 20px 50px rgba(43,36,28,0.16);
+  }
+  .unfold-loop-video{
+    display:block;
+    width:100%;
+    height:auto;
+  }
+  .unfold-scroll-cue{
+    margin-top:0.6rem;
+    font-size:0.78rem;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--gold-deep);
+    opacity:0.85;
+  }
+  .unfold-scroll-arrow{
+    display:inline-block;
+    animation:unfold-cue-bounce 1.6s ease-in-out infinite;
+  }
+  @keyframes unfold-cue-bounce{
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(6px); }
+  }
+
+  .unfold-scene{
+    position:relative;
+    height:320vh;
+  }
+  .unfold-sticky{
+    position:sticky;
+    top:0;
+    height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    background:linear-gradient(180deg, var(--paper), var(--ivory));
+  }
+  .unfold-video{
+    max-width:min(1000px, 92vw);
+    max-height:74vh;
+    width:auto;
+    height:auto;
+    border-radius:18px;
+    box-shadow:0 30px 70px rgba(43,36,28,0.22);
+    background:#000;
+  }
+  .unfold-caption{
+    position:absolute;
+    top:9vh;
+    left:0; right:0;
+    text-align:center;
+    pointer-events:none;
+  }
+  .unfold-caption-eyebrow{
+    display:block;
+    font-size:0.75rem;
+    letter-spacing:0.4em;
+    text-transform:uppercase;
+    color:var(--gold-deep);
+    margin-bottom:0.7rem;
+  }
+  .unfold-caption-title{
+    font-size:clamp(1.6rem, 3.4vw, 2.4rem);
+    color:var(--ink);
+  }
+  .unfold-caption-title em{ font-style:italic; color:var(--gold-deep); }
+  .unfold-progress-track{
+    position:absolute;
+    left:50%;
+    bottom:6vh;
+    transform:translateX(-50%);
+    width:min(320px, 70vw);
+    height:3px;
+    background:var(--hair);
+    border-radius:999px;
+    overflow:hidden;
+  }
+  .unfold-progress-fill{
+    height:100%;
+    width:0%;
+    background:var(--gold);
+    border-radius:999px;
+  }
+
+  .unfold-outro{
+    max-width:600px;
+    margin:0 auto;
+    padding:10vh 6vw 14vh;
+    text-align:center;
+  }
+  .unfold-outro p{
+    margin-top:1.3rem;
+    font-size:1.02rem;
+    line-height:1.85;
+    color:var(--ink-soft);
+    font-weight:500;
+  }
+  .unfold-outro-btn{
+    display:inline-block;
+    text-decoration:none;
+    margin-top:2rem;
+    padding:0.9rem 2.2rem;
+  }
+
+  @media (max-width:700px){
+    .unfold-scene{ height:240vh; }
+    .unfold-caption{ top:6vh; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .unfold-scroll-arrow{ animation:none; }
+  }

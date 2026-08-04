@@ -11,9 +11,12 @@ cart.html          Cart page: reads/removes items from the localStorage cart
 about.html         About page
 contact.html       Contact page
 reviews.html       Customer reviews: star ratings, submit/edit/delete/report
+unfold.html        "The Unfold": scroll-scrubbed video of a fan coming apart/together
 css/style.css      Styles
 js/main.js         Nav, colour/detail page switching, cart, reviews, petal animation
+js/unfold.js       Scroll-scrubbing logic for unfold.html
 images/            Site imagery (placeholders — see note below)
+videos/            Fan assembly/disassembly footage used on unfold.html
 ```
 
 ## Running locally
@@ -33,3 +36,4 @@ Then open the printed local URL in your browser.
 - **Cart is local-only.** `js/main.js` stores cart items in `localStorage` (`bb_cart`) and the nav badge/`cart.html` read from it — there's no backend or checkout yet.
 - **Reviews are per-browser by default.** They're stored in `localStorage`, so right now only the browser that posted a review can see it. To make reviews visible to every visitor, set `REMOTE_REVIEWS_URL` near the top of the reviews block in `js/main.js` to a JSON storage endpoint that supports `GET` (returns the reviews array, or `{reviews:[...]}`) and `POST` (overwrites it with a JSON array body) — for example a free bin from [npoint.io](https://www.npoint.io) (no account needed: create a bin there, paste `{"reviews":[]}` as the content, and use the URL it gives you). Once set, the page pulls the shared list on load and polls it every 60 seconds so new reviews show up for everyone within about a minute.
 - **Review reports** open a small dialog asking for a reason and tag the review with a red "Reported for: …" note visible on the page — there's no separate email/push alert.
+- **`unfold.html`** pins `videos/fan-disassemble.mp4` full-screen while its scroll section passes by and maps scroll position straight onto the video's `currentTime` (see `js/unfold.js`) — scrolling down plays the disassembly forward, scrolling back up runs the same footage backward, so the two directions always match frame-for-frame. `videos/fan-assemble.mp4` is used as a small looping preview above it. Visitors with `prefers-reduced-motion` get the video inline with native controls instead of the scroll-pinned effect.
