@@ -752,7 +752,7 @@
   // buttons (grid cards and the single-product overlay) write to it, and
   // cart.html plus the drawer both read it back. -----
   const CART_KEY = 'bb_cart';
-  const DEFAULT_PRICE = 20.54;
+  const DEFAULT_PRICE = 12.54;
   const colourHex = {
     Red:'#C0392B', Orange:'#D96C2B', Yellow:'#DDAF35', Green:'#6B8F52',
     Blue:'#5F8DBF', Purple:'#8B6FA8', Pink:'#E39FB0', Brown:'#7B5A3E',
@@ -962,6 +962,137 @@
     cartDrawer.render();
   }
   refreshCartViews();
+
+  // ----- checkout.html: Temu-style checkout - delivery/pickup fulfilment,
+  // a card payment form (front-end only, nothing is transmitted anywhere),
+  // and an order summary built from the same cart used everywhere else.
+  // Placing the order clears the cart so nothing lingers afterwards. -----
+  const checkoutForm = document.getElementById('checkoutForm');
+  if(checkoutForm){
+    const checkoutWrap = document.getElementById('checkoutWrap');
+    const checkoutEmpty = document.getElementById('checkoutEmpty');
+    const checkoutSummaryList = document.getElementById('checkoutSummaryList');
+    const checkoutTotalCount = document.getElementById('checkoutTotalCount');
+    const checkoutTotalPrice = document.getElementById('checkoutTotalPrice');
+    const checkoutFeedback = document.getElementById('checkoutFeedback');
+    const checkoutSuccess = document.getElementById('checkoutSuccess');
+    const checkoutSuccessMsg = document.getElementById('checkoutSuccessMsg');
+    const addressBlock = document.getElementById('addressBlock');
+    const pickupNote = document.getElementById('pickupNote');
+
+    function renderCheckoutSummary(){
+      const cart = getCart();
+      if(cart.length === 0){
+        checkoutWrap.hidden = true;
+        checkoutEmpty.hidden = false;
+        return false;
+      }
+      checkoutWrap.hidden = false;
+      checkoutEmpty.hidden = true;
+      checkoutSummaryList.innerHTML = cart.map(item => {
+        const swatch = colourHex[item.colour] || '#ccc';
+        return '<li class="checkout-summary-item">'
+          + '<div class="checkout-summary-swatch" style="background:' + swatch + '"></div>'
+          + '<div class="checkout-summary-info">'
+          + '<div class="checkout-summary-name">' + item.product + '</div>'
+          + '<div class="checkout-summary-qty">Qty ' + item.qty + '</div>'
+          + '</div>'
+          + '<div class="checkout-summary-price">' + formatPrice(cartItemPrice(item) * item.qty) + '</div>'
+          + '</li>';
+      }).join('');
+      checkoutTotalCount.textContent = cartCount(cart);
+      checkoutTotalPrice.textContent = formatPrice(cartSubtotal(cart));
+      return true;
+    }
+    const hadItems = renderCheckoutSummary();
+
+    // ----- fulfilment toggle: delivery shows the address block, pickup hides it -----
+    const fulfilRadios = checkoutForm.querySelectorAll('input[name="fulfilment"]');
+    function updateFulfilmentView(){
+      const isPickup = checkoutForm.querySelector('input[name="fulfilment"]:checked').value === 'pickup';
+      addressBlock.hidden = isPickup;
+      pickupNote.hidden = !isPickup;
+    }
+    fulfilRadios.forEach(r => r.addEventListener('change', updateFulfilmentView));
+    updateFulfilmentView();
+
+    // ----- light input formatting: card number spacing + expiry slash -----
+    const cardNumberInput = document.getElementById('ckCardNumber');
+    cardNumberInput.addEventListener('input', () => {
+      cardNumberInput.value = cardNumberInput.value.replace(/[^\d]/g, '').slice(0, 16).replace(/(\d{4})(?=\d)/g, '$1 ');
+    });
+    const cardExpiryInput = document.getElementById('ckCardExpiry');
+    cardExpiryInput.addEventListener('input', () => {
+      let digits = cardExpiryInput.value.replace(/[^\d]/g, '').slice(0, 4);
+      if(digits.length > 2) digits = digits.slice(0, 2) + '/' + digits.slice(2);
+      cardExpiryInput.value = digits;
+    });
+    const cardCvvInput = document.getElementById('ckCardCvv');
+    cardCvvInput.addEventListener('input', () => {
+      cardCvvInput.value = cardCvvInput.value.replace(/[^\d]/g, '').slice(0, 4);
+    });
+
+    function markField(input, valid){
+      input.classList.toggle('is-invalid', !valid);
+      return valid;
+    }
+
+    checkoutForm.addEventListener('submit', e => {
+      e.preventDefault();
+      if(getCart().length === 0) return;
+
+      const isPickup = checkoutForm.querySelector('input[name="fulfilment"]:checked').value === 'pickup';
+      const name = document.getElementById('ckName');
+      const phone = document.getElementById('ckPhone');
+      const cardName = document.getElementById('ckCardName');
+      const cardNumber = document.getElementById('ckCardNumber');
+      const cardExpiry = document.getElementById('ckCardExpiry');
+      const cardCvv = document.getElementById('ckCardCvv');
+      const address1 = document.getElementById('ckAddress1');
+      const city = document.getElementById('ckCity');
+      const state = document.getElementById('ckState');
+      const zip = document.getElementById('ckZip');
+      const country = document.getElementById('ckCountry');
+
+      let ok = true;
+      ok = markField(name, name.value.trim().length > 0) && ok;
+      ok = markField(phone, phone.value.trim().length > 0) && ok;
+      if(!isPickup){
+        ok = markField(address1, address1.value.trim().length > 0) && ok;
+        ok = markField(city, city.value.trim().length > 0) && ok;
+        ok = markField(state, state.value.trim().length > 0) && ok;
+        ok = markField(zip, zip.value.trim().length > 0) && ok;
+        ok = markField(country, country.value.trim().length > 0) && ok;
+      } else {
+        [address1, city, state, zip, country].forEach(f => f.classList.remove('is-invalid'));
+      }
+      ok = markField(cardName, cardName.value.trim().length > 0) && ok;
+      ok = markField(cardNumber, cardNumber.value.replace(/\s/g, '').length >= 13) && ok;
+      ok = markField(cardExpiry, /^\d{2}\/\d{2}$/.test(cardExpiry.value.trim())) && ok;
+      ok = markField(cardCvv, cardCvv.value.trim().length >= 3) && ok;
+
+      if(!ok){
+        checkoutFeedback.textContent = 'Please fill in every field so we can complete your order.';
+        return;
+      }
+
+      checkoutFeedback.textContent = '';
+      const last4 = cardNumber.value.replace(/\s/g, '').slice(-4);
+      checkoutSuccessMsg.textContent = isPickup
+        ? 'Thanks, ' + name.value.trim() + ' - we will text ' + phone.value.trim() + ' when your order is ready to collect in-store. Paid with card ending ' + last4 + '.'
+        : 'Thanks, ' + name.value.trim() + ' - your order will be delivered to the address you provided. Paid with card ending ' + last4 + '.';
+
+      // Card details never leave this form and are never saved anywhere -
+      // clear them immediately once the "payment" is done.
+      checkoutForm.reset();
+
+      saveCart([]);
+      refreshCartViews();
+
+      checkoutWrap.hidden = true;
+      checkoutSuccess.hidden = false;
+    });
+  }
 
   // ----- products.html: single-product detail overlay. Clicking a product
   // card shows just that one colour full-screen, with its price and cart

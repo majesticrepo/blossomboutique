@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout — Blossom Boutique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <span class="brand brand-with-mark"><span class="brand-word">Blossom</span><img class="brand-rose" src="images/logo-rose.png" alt=""><span class="brand-word">Boutique</span></span>
+  <div class="nav-right" id="navRight">
+    <ul id="navLinks">
+      <li><a href="index.html#home">Home</a></li>
+      <li><a href="products.html">Products</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="reviews.html">Reviews</a></li>
+      <li><a href="contact.html">Contacts</a></li>
+      <li><a href="cart.html" class="nav-cart-link">Cart<span class="cart-count" id="cartCount" hidden>0</span></a></li>
+    </ul>
+    <div class="nav-dots">
+    <a class="nav-dot" href="index.html#page-red" style="background:#C0392B;" title="Red"></a>
+    <a class="nav-dot" href="index.html#page-orange" style="background:#D96C2B;" title="Orange"></a>
+    <a class="nav-dot" href="index.html#page-yellow" style="background:#DDAF35;" title="Yellow"></a>
+    <a class="nav-dot" href="index.html#page-green" style="background:#6B8F52;" title="Green"></a>
+    <a class="nav-dot" href="index.html#page-blue" style="background:#5F8DBF;" title="Blue"></a>
+    <a class="nav-dot" href="index.html#page-purple" style="background:#8B6FA8;" title="Purple"></a>
+    <a class="nav-dot" href="index.html#page-pink" style="background:#E39FB0;" title="Pink"></a>
+    <a class="nav-dot" href="index.html#page-brown" style="background:#7B5A3E;" title="Brown"></a>
+    <a class="nav-dot" href="index.html#page-black" style="background:#2A2622;" title="Black"></a>
+    <a class="nav-dot nav-dot-white" href="index.html#page-white" title="White"></a>
+    <a class="nav-dot" href="index.html#page-beige" style="background:#D8C7A8;" title="Beige"></a>
+    <a class="nav-dot" href="index.html#page-gold" style="background:#9C7A32;" title="Gold"></a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<section class="checkout-page" id="checkoutPage" style="padding-top:20vh;">
+
+  <div class="section-head">
+    <span class="section-eyebrow">Almost There</span>
+    <h2 class="section-title">Secure <em>Checkout</em></h2>
+  </div>
+
+  <p class="checkout-empty" id="checkoutEmpty" hidden>Your cart is empty. <a href="products.html">Browse the collection &rarr;</a></p>
+
+  <div class="checkout-wrap" id="checkoutWrap">
+    <form class="checkout-form" id="checkoutForm" novalidate>
+
+      <div class="checkout-block">
+        <h3 class="checkout-block-title">Fulfilment</h3>
+        <div class="fulfil-toggle" role="radiogroup" aria-label="Delivery method">
+          <label class="fulfil-option">
+            <input type="radio" name="fulfilment" value="delivery" id="fulfilDelivery" checked>
+            <span>Delivery</span>
+          </label>
+          <label class="fulfil-option">
+            <input type="radio" name="fulfilment" value="pickup" id="fulfilPickup">
+            <span>Store Pickup</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="checkout-block">
+        <h3 class="checkout-block-title">Contact</h3>
+        <div class="checkout-field">
+          <span>Full Name</span>
+          <input type="text" id="ckName" autocomplete="name">
+        </div>
+        <div class="checkout-field">
+          <span>Phone Number</span>
+          <input type="tel" id="ckPhone" autocomplete="tel">
+        </div>
+      </div>
+
+      <div class="checkout-block" id="addressBlock">
+        <h3 class="checkout-block-title">Delivery Address</h3>
+        <div class="checkout-field">
+          <span>Address Line 1</span>
+          <input type="text" id="ckAddress1" autocomplete="address-line1">
+        </div>
+        <div class="checkout-field">
+          <span>Address Line 2 (optional)</span>
+          <input type="text" id="ckAddress2" autocomplete="address-line2">
+        </div>
+        <div class="checkout-field-row">
+          <div class="checkout-field">
+            <span>City</span>
+            <input type="text" id="ckCity" autocomplete="address-level2">
+          </div>
+          <div class="checkout-field">
+            <span>State / Region</span>
+            <input type="text" id="ckState" autocomplete="address-level1">
+          </div>
+        </div>
+        <div class="checkout-field-row">
+          <div class="checkout-field">
+            <span>Postal Code</span>
+            <input type="text" id="ckZip" autocomplete="postal-code">
+          </div>
+          <div class="checkout-field">
+            <span>Country</span>
+            <input type="text" id="ckCountry" autocomplete="country-name">
+          </div>
+        </div>
+      </div>
+
+      <p class="checkout-pickup-note" id="pickupNote" hidden>We'll have your order ready to collect in-store — we'll text you at the number above when it's ready.</p>
+
+      <div class="checkout-block">
+        <h3 class="checkout-block-title">Payment</h3>
+        <div class="checkout-field">
+          <span>Cardholder Name</span>
+          <input type="text" id="ckCardName" autocomplete="cc-name">
+        </div>
+        <div class="checkout-field">
+          <span>Card Number</span>
+          <input type="text" id="ckCardNumber" inputmode="numeric" maxlength="19" placeholder="1234 5678 9012 3456" autocomplete="cc-number">
+        </div>
+        <div class="checkout-field-row">
+          <div class="checkout-field">
+            <span>Expiry (MM/YY)</span>
+            <input type="text" id="ckCardExpiry" inputmode="numeric" maxlength="5" placeholder="MM/YY" autocomplete="cc-exp">
+          </div>
+          <div class="checkout-field">
+            <span>CVV</span>
+            <input type="text" id="ckCardCvv" inputmode="numeric" maxlength="4" placeholder="123" autocomplete="cc-csc">
+          </div>
+        </div>
+      </div>
+
+      <p class="checkout-feedback" id="checkoutFeedback"></p>
+      <button type="submit" class="review-submit checkout-submit" id="checkoutSubmit">Place Order</button>
+    </form>
+
+    <aside class="checkout-summary" id="checkoutSummary">
+      <h3 class="checkout-block-title">Order Summary</h3>
+      <ul class="checkout-summary-list" id="checkoutSummaryList"></ul>
+      <div class="cart-summary" style="border-top:1px solid rgba(43,36,28,0.15); padding-top:1.1rem; margin-top:0.4rem;">
+        <div class="cart-summary-row">
+          <span class="cart-total-label">Items</span>
+          <span class="cart-total-value" id="checkoutTotalCount">0</span>
+        </div>
+        <div class="cart-summary-row">
+          <span class="cart-total-label">Subtotal</span>
+          <span class="cart-total-value" id="checkoutTotalPrice">$0.00</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+</section>
+
+<div class="checkout-success" id="checkoutSuccess" hidden>
+  <div class="checkout-success-panel">
+    <div class="checkout-success-icon">&#10003;</div>
+    <h2>Order Placed!</h2>
+    <p id="checkoutSuccessMsg">Thank you for your order.</p>
+    <a class="review-submit checkout-success-home" href="index.html#home">Back to Home</a>
+  </div>
+</div>
+
+<footer>
+  <span class="brand wave-text">Blossom Boutique</span>
+  <p class="wave-text">Handcrafted fans, wrapped with care</p>
+</footer>
+
+<script src="js/main.js" defer></script>
+
+</body>
+</html>
