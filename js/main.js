@@ -772,11 +772,200 @@
     wrap.appendChild(p);
   }
 
+// ----- Account: sign up / log in with an email, Google address, or phone
+  // number, plus a nickname. This site has no backend, so there's no real
+  // authentication, OAuth, or SMS involved - "logging in" just looks up the
+  // nickname + cart saved under that identifier in this browser's storage,
+  // so coming back and using the same email/phone/Google address on this
+  // device restores your cart. Injected into every page's nav since the nav
+  // markup itself is duplicated per-page rather than shared. -----
+  (function(){
+    const ACCOUNTS_KEY = 'bb_accounts';
+    const CURRENT_ACCOUNT_KEY = 'bb_current_account';
+    const METHOD_LABELS = { email: 'Email address', google: 'Google email', phone: 'Phone number' };
+    const METHOD_PLACEHOLDERS = { email: 'you@example.com', google: 'you@gmail.com', phone: '+1 555 123 4567' };
+    const METHOD_INPUT_TYPES = { email: 'email', google: 'email', phone: 'tel' };
+
+    function getAccounts(){
+      try{ return JSON.parse(localStorage.getItem(ACCOUNTS_KEY)) || {}; }
+      catch(e){ return {}; }
+    }
+    function saveAccounts(accounts){
+      try{ localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts)); }catch(e){}
+    }
+    function getCurrentAccountId(){
+      try{ return localStorage.getItem(CURRENT_ACCOUNT_KEY); }catch(e){ return null; }
+    }
+    function setCurrentAccountId(id){
+      try{
+        if(id) localStorage.setItem(CURRENT_ACCOUNT_KEY, id);
+        else localStorage.removeItem(CURRENT_ACCOUNT_KEY);
+      }catch(e){}
+    }
+    function getCurrentAccount(){
+      const id = getCurrentAccountId();
+      return id ? getAccounts()[id] : null;
+    }
+    window.bbAccount = { getCurrentAccountId, cartKeyFor: id => id ? 'bb_cart_' + id : 'bb_cart' };
+
+    // ----- nav: "Sign In" (logged out) or "Hi, <nickname>  Log out" (logged
+    // in), inserted just before the Cart link on whichever page is open -----
+    const navLinks = document.getElementById('navLinks');
+    let navAccount = null;
+    if(navLinks){
+      const cartLi = navLinks.querySelector('.nav-cart-link')?.closest('li');
+      navAccount = document.createElement('li');
+      navAccount.id = 'navAccount';
+      navAccount.className = 'nav-account';
+      if(cartLi) navLinks.insertBefore(navAccount, cartLi);
+      else navLinks.appendChild(navAccount);
+    }
+    function renderAccountNav(){
+      if(!navAccount) return;
+      navAccount.innerHTML = '';
+      const account = getCurrentAccount();
+      if(account){
+        const name = document.createElement('span');
+        name.className = 'nav-account-name';
+        name.textContent = 'Hi, ' + account.nickname;
+        const logout = document.createElement('a');
+        logout.href = '#';
+        logout.className = 'nav-account-logout';
+        logout.textContent = 'Log out';
+        logout.addEventListener('click', e => {
+          e.preventDefault();
+          setCurrentAccountId(null);
+          renderAccountNav();
+          if(typeof refreshCartViews === 'function') refreshCartViews();
+        });
+        navAccount.append(name, logout);
+      } else {
+        const link = document.createElement('a');
+        link.href = '#';
+        link.id = 'accountNavLink';
+        link.textContent = 'Sign In';
+        link.addEventListener('click', e => { e.preventDefault(); openAccountModal(); });
+        navAccount.appendChild(link);
+      }
+    }
+
+    // ----- modal: one method row (Email/Google/Phone) + nickname + identifier.
+    // Submitting looks the identifier up: an existing match logs straight in
+    // (nickname + cart come from what was saved before), a new one signs up
+    // and carries over whatever's currently in the cart. -----
+    const modal = document.createElement('div');
+    modal.className = 'account-modal';
+    modal.id = 'accountModal';
+    modal.hidden = true;
+    modal.innerHTML =
+      '<div class="account-modal-backdrop"></div>' +
+      '<div class="account-modal-panel" role="dialog" aria-modal="true" aria-labelledby="accountModalTitle">' +
+        '<button type="button" class="account-modal-close" aria-label="Close">&times;</button>' +
+        '<h3 id="accountModalTitle">Sign In / Sign Up</h3>' +
+        '<p class="account-modal-sub">This site doesn’t have a server, so there’s no real Google sign-in or SMS — use any email, Google address, or phone number as your key, and this browser remembers your nickname and cart for it.</p>' +
+        '<div class="account-method-row" role="group" aria-label="Sign-in method">' +
+          '<button type="button" class="account-method-btn is-active" data-method="email">Email</button>' +
+          '<button type="button" class="account-method-btn" data-method="google">Google</button>' +
+          '<button type="button" class="account-method-btn" data-method="phone">Phone</button>' +
+        '</div>' +
+        '<form id="accountForm">' +
+          '<label class="account-field">' +
+            '<span id="accountIdentifierLabel">Email address</span>' +
+            '<input type="email" id="accountIdentifier" autocomplete="email" required>' +
+          '</label>' +
+          '<label class="account-field">' +
+            '<span>Nickname</span>' +
+            '<input type="text" id="accountNickname" placeholder="Only needed the first time" autocomplete="nickname">' +
+          '</label>' +
+          '<p class="account-modal-error" id="accountModalError" hidden></p>' +
+          '<button type="submit" class="account-submit-btn">Continue</button>' +
+        '</form>' +
+      '</div>';
+    document.body.appendChild(modal);
+
+    const backdrop = modal.querySelector('.account-modal-backdrop');
+    const closeBtn = modal.querySelector('.account-modal-close');
+    const methodBtns = modal.querySelectorAll('.account-method-btn');
+    const identifierInput = modal.querySelector('#accountIdentifier');
+    const identifierLabel = modal.querySelector('#accountIdentifierLabel');
+    const nicknameInput = modal.querySelector('#accountNickname');
+    const errorEl = modal.querySelector('#accountModalError');
+    const form = modal.querySelector('#accountForm');
+    let currentMethod = 'email';
+
+    function openAccountModal(){
+      modal.hidden = false;
+      document.body.classList.add('account-modal-open');
+      errorEl.hidden = true;
+      identifierInput.value = '';
+      nicknameInput.value = '';
+      identifierInput.focus();
+    }
+    function closeAccountModal(){
+      modal.hidden = true;
+      document.body.classList.remove('account-modal-open');
+    }
+    backdrop.addEventListener('click', closeAccountModal);
+    closeBtn.addEventListener('click', closeAccountModal);
+    document.addEventListener('keydown', e => {
+      if(e.key === 'Escape' && !modal.hidden) closeAccountModal();
+    });
+    methodBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentMethod = btn.dataset.method;
+        methodBtns.forEach(b => b.classList.toggle('is-active', b === btn));
+        identifierLabel.textContent = METHOD_LABELS[currentMethod];
+        identifierInput.placeholder = METHOD_PLACEHOLDERS[currentMethod];
+        identifierInput.type = METHOD_INPUT_TYPES[currentMethod];
+      });
+    });
+
+    function showError(message){
+      errorEl.textContent = message;
+      errorEl.hidden = false;
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const identifier = identifierInput.value.trim();
+      const nickname = nicknameInput.value.trim();
+      if(!identifier){ showError('Please enter your ' + METHOD_LABELS[currentMethod].toLowerCase() + '.'); return; }
+
+      const accountId = currentMethod + ':' + identifier.toLowerCase();
+      const accounts = getAccounts();
+      const existing = accounts[accountId];
+
+      if(!existing && !nickname){
+        showError('Pick a nickname to finish signing up — you won’t need it again after that.');
+        return;
+      }
+
+      if(!existing){
+        // New sign-up: carry over whatever's already in the guest cart so
+        // nothing they'd already added gets lost.
+        let guestCart = [];
+        try{ guestCart = JSON.parse(localStorage.getItem('bb_cart')) || []; }catch(err){}
+        accounts[accountId] = { method: currentMethod, identifier, nickname, createdAt: Date.now() };
+        saveAccounts(accounts);
+        try{ localStorage.setItem('bb_cart_' + accountId, JSON.stringify(guestCart)); }catch(err){}
+      }
+
+      setCurrentAccountId(accountId);
+      renderAccountNav();
+      closeAccountModal();
+      if(typeof refreshCartViews === 'function') refreshCartViews();
+    });
+
+    renderAccountNav();
+  })();
+
 // ----- Cart: localStorage-backed, shared across every page via the nav
   // badge and a Temu-style slide-in drawer. products.html's Add to Cart/Buy
   // buttons (grid cards and the single-product overlay) write to it, and
-  // cart.html plus the drawer both read it back. -----
-  const CART_KEY = 'bb_cart';
+  // cart.html plus the drawer both read it back. Once signed in, the cart is
+  // scoped to that account (see window.bbAccount above) so logging back in
+  // with the same email/phone/Google address on this browser brings it back. -----
+  function CART_KEY_FN(){ return window.bbAccount ? window.bbAccount.cartKeyFor(window.bbAccount.getCurrentAccountId()) : 'bb_cart'; }
   const DEFAULT_PRICE = 12.54;
   const colourHex = {
     Red:'#C0392B', Orange:'#D96C2B', Yellow:'#DDAF35', Green:'#6B8F52',
@@ -785,11 +974,11 @@
   };
 
   function getCart(){
-    try{ return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
+    try{ return JSON.parse(localStorage.getItem(CART_KEY_FN())) || []; }
     catch(e){ return []; }
   }
   function saveCart(cart){
-    try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch(e){}
+    try{ localStorage.setItem(CART_KEY_FN(), JSON.stringify(cart)); }catch(e){}
   }
   function cartItemPrice(item){ return Number(item.price) || DEFAULT_PRICE; }
   function cartCount(cart){ return cart.reduce((sum, item) => sum + item.qty, 0); }
@@ -1147,29 +1336,6 @@
     });
   }
 
-  // ----- products.html: single side toggle button (not tied to any one
-  // product) that swaps every card's photo between the original striped
-  // panel and the elegant lace-bordered one. Only the photo changes; the
-  // rest of each card is untouched. Gold = on, see-through = off, and the
-  // choice is remembered between visits. -----
-  const styleToggleSide = document.getElementById('styleToggleSide');
-  const elegantGrid = document.querySelector('.product-grid');
-  if(styleToggleSide && elegantGrid){
-    const GRID_STYLE_KEY = 'bb_grid_style';
-    function applyGridStyle(isElegant){
-      elegantGrid.classList.toggle('style-elegant', isElegant);
-      styleToggleSide.classList.toggle('is-active', isElegant);
-      styleToggleSide.setAttribute('aria-pressed', String(isElegant));
-    }
-    let isElegant = localStorage.getItem(GRID_STYLE_KEY) === '1';
-    applyGridStyle(isElegant);
-    styleToggleSide.addEventListener('click', () => {
-      isElegant = !isElegant;
-      try{ localStorage.setItem(GRID_STYLE_KEY, isElegant ? '1' : '0'); }catch(e){}
-      applyGridStyle(isElegant);
-    });
-  }
-
   // ----- products.html: single-product detail overlay. Clicking a product
   // card shows just that one colour full-screen, with its price and cart
   // actions - reuses the same .colour-page visuals/transition as index.html's
@@ -1217,13 +1383,13 @@
       });
     });
 
-    // ----- Cartoon/Elegant fan-style toggle: each product page has its own
-    // toggle and two overlaid <svg> images (data-style-img="cartoon"/"elegant") -----
-    productPages.forEach(page => {
-      const toggle = page.querySelector('.fan-style-toggle');
-      if(!toggle) return;
-      const buttons = toggle.querySelectorAll('.fan-style-btn');
-      const images = page.querySelectorAll('[data-style-img]');
+    // ----- Cartoon/Elegant fan-style toggle: one control at the top of the
+    // products listing switches every product's pair of overlaid <svg>
+    // images (data-style-img="cartoon"/"elegant") at once -----
+    const globalStyleToggle = document.querySelector('.fan-style-toggle-row .fan-style-toggle');
+    if(globalStyleToggle){
+      const buttons = globalStyleToggle.querySelectorAll('.fan-style-btn');
+      const images = document.querySelectorAll('[data-style-img]');
       buttons.forEach(btn => {
         btn.addEventListener('click', () => {
           const style = btn.dataset.style;
@@ -1237,5 +1403,5 @@
           });
         });
       });
-    });
+    }
   }

@@ -561,6 +561,7 @@
       <li><a href="index.html#home">Home</a></li>
       <li><a href="products.html">Products</a></li>
       <li><a href="about.html">About Us</a></li>
+      <li><a href="unfold.html">The Unfold</a></li>
       <li><a href="reviews.html">Reviews</a></li>
       <li><a href="contact.html">Contacts</a></li>
       <li><a href="cart.html" class="nav-cart-link">Cart<span class="cart-count" id="cartCount" hidden>0</span></a></li>
@@ -585,11 +586,6 @@
   </div>
 </nav>
 
-<button type="button" class="style-toggle-side" id="styleToggleSide" aria-pressed="false" title="Switch every fan photo to the elegant lace style">
-  <span class="style-toggle-side-icon" aria-hidden="true">&#10022;</span>
-  <span>Elegant<br>Style</span>
-</button>
-
 <section class="products" id="products" style="padding-top:20vh;">
 
   <div class="section-head">
@@ -598,6 +594,13 @@
   </div>
 
   <p class="touch-hint"><span class="touch-hint-arrow">&rarr;</span> Press a colour to learn more</p>
+
+  <div class="fan-style-toggle-row">
+    <div class="fan-style-toggle" role="group" aria-label="Fan illustration style">
+      <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
+      <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
+    </div>
+  </div>
 
   <div class="colour-dot-row">
     <a class="flower-item c-red" href="index.html#page-red" title="Crimson Fan"><div class="swatch"></div><div class="colour-name">Red</div></a>
@@ -617,7 +620,7 @@
   <div class="product-grid">
     <div class="product-card" style="--c:#C0392B;">
       <a class="product-card-link bloom-link" href="#product-red" data-colour-hex="#C0392B">
-        <div class="product-card-photo"></div>
+        <div class="product-card-photo"><div class="product-card-photo-cartoon" data-style-img="cartoon"></div><div class="product-card-photo-elegant" data-style-img="elegant" hidden></div></div>
         <div class="colour-name">Red</div>
         <div class="product-card-name">Crimson Fan</div>
         <div class="product-card-scent">Rose</div>
@@ -629,7 +632,7 @@
     </div>
     <div class="product-card" style="--c:#D96C2B;">
       <a class="product-card-link bloom-link" href="#product-orange" data-colour-hex="#D96C2B">
-        <div class="product-card-photo"></div>
+        <div class="product-card-photo"><div class="product-card-photo-cartoon" data-style-img="cartoon"></div><div class="product-card-photo-elegant" data-style-img="elegant" hidden></div></div>
         <div class="colour-name">Orange</div>
         <div class="product-card-name">Amber Fan</div>
         <div class="product-card-scent">Marigold</div>
@@ -641,7 +644,7 @@
     </div>
     <div class="product-card" style="--c:#DDAF35;">
       <a class="product-card-link bloom-link" href="#product-yellow" data-colour-hex="#DDAF35">
-        <div class="product-card-photo"></div>
+        <div class="product-card-photo"><div class="product-card-photo-cartoon" data-style-img="cartoon"></div><div class="product-card-photo-elegant" data-style-img="elegant" hidden></div></div>
         <div class="colour-name">Yellow</div>
         <div class="product-card-name">Golden Fan</div>
         <div class="product-card-scent">Sunflower</div>
@@ -653,7 +656,7 @@
     </div>
     <div class="product-card" style="--c:#6B8F52;">
       <a class="product-card-link bloom-link" href="#product-green" data-colour-hex="#6B8F52">
-        <div class="product-card-photo"></div>
+        <div class="product-card-photo"><div class="product-card-photo-cartoon" data-style-img="cartoon"></div><div class="product-card-photo-elegant" data-style-img="elegant" hidden></div></div>
         <div class="colour-name">Green</div>
         <div class="product-card-name">Jade Fan</div>
         <div class="product-card-scent">Jade Orchid</div>
@@ -665,7 +668,7 @@
     </div>
     <div class="product-card" style="--c:#5F8DBF;">
       <a class="product-card-link bloom-link" href="#product-blue" data-colour-hex="#5F8DBF">
-        <div class="product-card-photo"></div>
+        <div class="product-card-photo"><div class="product-card-photo-cartoon" data-style-img="cartoon"></div><div class="product-card-photo-elegant" data-style-img="elegant" hidden></div></div>
         <div class="colour-name">Blue</div>
         <div class="product-card-name">Sapphire Fan</div>
         <div class="product-card-scent">Hydrangea</div>
@@ -677,7 +680,7 @@
     </div>
     <div class="product-card" style="--c:#8B6FA8;">
       <a class="product-card-link bloom-link" href="#product-purple" data-colour-hex="#8B6FA8">
-        <div class="product-card-photo"></div>
+        <div class="product-card-photo"><div class="product-card-photo-cartoon" data-style-img="cartoon"></div><div class="product-card-photo-elegant" data-style-img="elegant" hidden></div></div>
         <div class="colour-name">Purple</div>
         <div class="product-card-name">Amethyst Fan</div>
         <div class="product-card-scent">Lavender</div>
@@ -689,7 +692,7 @@
     </div>
     <div class="product-card" style="--c:#E39FB0;">
       <a class="product-card-link bloom-link" href="#product-pink" data-colour-hex="#E39FB0">
-        <div class="product-card-photo"></div>
+        <div class="product-card-photo"><div class="product-card-photo-cartoon" data-style-img="cartoon"></div><div class="product-card-photo-elegant" data-style-img="elegant" hidden></div></div>
         <div class="colour-name">Pink</div>
         <div class="product-card-name">Sakura Fan</div>
         <div class="product-card-scent">Cherry Blossom</div>
@@ -701,7 +704,7 @@
     </div>
     <div class="product-card" style="--c:#7B5A3E;">
       <a class="product-card-link bloom-link" href="#product-brown" data-colour-hex="#7B5A3E">
-        <div class="product-card-photo"></div>
+        <div class="product-card-photo"><div class="product-card-photo-cartoon" data-style-img="cartoon"></div><div class="product-card-photo-elegant" data-style-img="elegant" hidden></div></div>
         <div class="colour-name">Brown</div>
         <div class="product-card-name">Chestnut Fan</div>
         <div class="product-card-scent">Chrysanthemum</div>
@@ -713,7 +716,7 @@
     </div>
     <div class="product-card" style="--c:#2A2622;">
       <a class="product-card-link bloom-link" href="#product-black" data-colour-hex="#2A2622">
-        <div class="product-card-photo"></div>
+        <div class="product-card-photo"><div class="product-card-photo-cartoon" data-style-img="cartoon"></div><div class="product-card-photo-elegant" data-style-img="elegant" hidden></div></div>
         <div class="colour-name">Black</div>
         <div class="product-card-name">Onyx Fan</div>
         <div class="product-card-scent">Black Orchid</div>
@@ -725,7 +728,7 @@
     </div>
     <div class="product-card is-light" style="--c:#FBF8F2;">
       <a class="product-card-link bloom-link" href="#product-white" data-colour-hex="#FBF8F2">
-        <div class="product-card-photo"></div>
+        <div class="product-card-photo"><div class="product-card-photo-cartoon" data-style-img="cartoon"></div><div class="product-card-photo-elegant" data-style-img="elegant" hidden></div></div>
         <div class="colour-name">White</div>
         <div class="product-card-name">Ivory Fan</div>
         <div class="product-card-scent">Lily</div>
@@ -737,7 +740,7 @@
     </div>
     <div class="product-card" style="--c:#D8C7A8;">
       <a class="product-card-link bloom-link" href="#product-beige" data-colour-hex="#D8C7A8">
-        <div class="product-card-photo"></div>
+        <div class="product-card-photo"><div class="product-card-photo-cartoon" data-style-img="cartoon"></div><div class="product-card-photo-elegant" data-style-img="elegant" hidden></div></div>
         <div class="colour-name">Beige</div>
         <div class="product-card-name">Linen Fan</div>
         <div class="product-card-scent">Magnolia</div>
@@ -749,7 +752,7 @@
     </div>
     <div class="product-card" style="--c:#9C7A32;">
       <a class="product-card-link bloom-link" href="#product-gold" data-colour-hex="#9C7A32">
-        <div class="product-card-photo"></div>
+        <div class="product-card-photo"><div class="product-card-photo-cartoon" data-style-img="cartoon"></div><div class="product-card-photo-elegant" data-style-img="elegant" hidden></div></div>
         <div class="colour-name">Gold</div>
         <div class="product-card-name">Champagne Fan</div>
         <div class="product-card-scent">Peony</div>
@@ -770,10 +773,6 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <div class="fan-style-toggle" role="group" aria-label="Fan style">
-        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
-        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
-      </div>
       <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanRed"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
@@ -794,10 +793,6 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <div class="fan-style-toggle" role="group" aria-label="Fan style">
-        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
-        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
-      </div>
       <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanOrange"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
@@ -818,10 +813,6 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <div class="fan-style-toggle" role="group" aria-label="Fan style">
-        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
-        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
-      </div>
       <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanYellow"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
@@ -842,10 +833,6 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <div class="fan-style-toggle" role="group" aria-label="Fan style">
-        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
-        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
-      </div>
       <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanGreen"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
@@ -866,10 +853,6 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <div class="fan-style-toggle" role="group" aria-label="Fan style">
-        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
-        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
-      </div>
       <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanBlue"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
@@ -890,10 +873,6 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <div class="fan-style-toggle" role="group" aria-label="Fan style">
-        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
-        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
-      </div>
       <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanPurple"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
@@ -914,10 +893,6 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <div class="fan-style-toggle" role="group" aria-label="Fan style">
-        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
-        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
-      </div>
       <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanPink"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
@@ -938,10 +913,6 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <div class="fan-style-toggle" role="group" aria-label="Fan style">
-        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
-        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
-      </div>
       <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanBrown"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
@@ -962,10 +933,6 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <div class="fan-style-toggle" role="group" aria-label="Fan style">
-        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
-        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
-      </div>
       <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanBlack"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
@@ -986,10 +953,6 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <div class="fan-style-toggle" role="group" aria-label="Fan style">
-        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
-        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
-      </div>
       <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanWhite"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
@@ -1010,10 +973,6 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <div class="fan-style-toggle" role="group" aria-label="Fan style">
-        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
-        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
-      </div>
       <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanBeige"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
@@ -1034,10 +993,6 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <div class="fan-style-toggle" role="group" aria-label="Fan style">
-        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
-        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
-      </div>
       <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanGold"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>

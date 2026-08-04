@@ -3,10 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cart — Blossom Boutique</title>
+<title>The Unfold — Blossom Boutique</title>
+<meta name="description" content="Scroll to watch a Blossom Boutique fan come apart, fold by fold — and scroll back up to watch it come together again.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<noscript><style>
+  .unfold-scene{ height:auto; }
+  .unfold-sticky{ position:relative; height:auto; padding:6vh 0; }
+  .unfold-caption, .unfold-progress-track{ display:none; }
+</style></noscript>
 </head>
 <body>
 
@@ -20,7 +26,7 @@
       <li><a href="unfold.html">The Unfold</a></li>
       <li><a href="reviews.html">Reviews</a></li>
       <li><a href="contact.html">Contacts</a></li>
-      <li><a href="cart.html" class="nav-cart-link is-active">Cart<span class="cart-count" id="cartCount" hidden>0</span></a></li>
+      <li><a href="cart.html" class="nav-cart-link">Cart<span class="cart-count" id="cartCount" hidden>0</span></a></li>
     </ul>
     <div class="nav-dots">
     <a class="nav-dot" href="index.html#page-red" style="background:#C0392B;" title="Red"></a>
@@ -42,29 +48,34 @@
   </div>
 </nav>
 
-<section class="cart-page" id="cart" style="padding-top:20vh;">
+<section class="unfold-intro">
+  <span class="section-eyebrow">Behind the Craft</span>
+  <h1 class="section-title">The <em>Unfold</em></h1>
+  <p class="unfold-intro-sub">Every Blossom Boutique fan is a handful of bamboo ribs and a pleat of silk, joined at a single pin. Here's what that looks like taken apart — and put back together.</p>
 
-  <div class="section-head">
-    <span class="section-eyebrow">Your Selection</span>
-    <h2 class="section-title">Your <em>Cart</em></h2>
+  <div class="unfold-loop-card">
+    <video class="unfold-loop-video" src="videos/fan-assemble.mp4" poster="images/fan-assemble-poster.jpg" muted loop playsinline autoplay preload="metadata"></video>
   </div>
 
-  <div class="cart-wrap" id="cartWrap">
-    <p class="cart-empty" id="cartEmpty">Your cart is empty. <a href="products.html">Browse the collection &rarr;</a></p>
-    <ul class="cart-list" id="cartList" hidden></ul>
-    <div class="cart-summary" id="cartSummary" hidden>
-      <div class="cart-summary-row">
-        <span class="cart-total-label">Items</span>
-        <span class="cart-total-value" id="cartTotalCount">0</span>
-      </div>
-      <div class="cart-summary-row">
-        <span class="cart-total-label">Subtotal</span>
-        <span class="cart-total-value" id="cartTotalPrice">$0.00</span>
-      </div>
-      <a class="review-submit cart-checkout-btn" href="checkout.html">Pay / Buy Now</a>
+  <p class="unfold-scroll-cue">Scroll to begin <span class="unfold-scroll-arrow">↓</span></p>
+</section>
+
+<section class="unfold-scene" id="unfoldScene">
+  <div class="unfold-sticky">
+    <video id="unfoldVideo" class="unfold-video" src="videos/fan-disassemble.mp4" poster="images/fan-disassemble-poster.jpg" muted playsinline preload="auto" controls></video>
+    <div class="unfold-caption">
+      <span class="unfold-caption-eyebrow" id="unfoldCaptionEyebrow">Scroll down</span>
+      <h2 class="unfold-caption-title" id="unfoldCaptionTitle">Watch it <em>come apart</em></h2>
     </div>
+    <div class="unfold-progress-track"><div class="unfold-progress-fill" id="unfoldProgressFill"></div></div>
   </div>
+</section>
 
+<section class="unfold-outro">
+  <span class="section-eyebrow">Fold by Fold</span>
+  <h2 class="section-title">Made to <em>come together</em></h2>
+  <p>No glue, no shortcuts — just bamboo ribs pinned true and silk pleated by hand, so every fan opens the same way it was born: gathered, then set free.</p>
+  <a class="btn-buy unfold-outro-btn" href="products.html">Shop the Fans</a>
 </section>
 
 <footer>
@@ -73,6 +84,7 @@
 </footer>
 
 <script src="js/main.js" defer></script>
+<script src="js/unfold.js" defer></script>
 
 </body>
 </html>
