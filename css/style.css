@@ -689,6 +689,7 @@
   .back-link:hover{ opacity:1; letter-spacing:0.3em; }
 
   .page-visual{
+    position:relative;
     flex:1 1 320px;
     display:flex;
     align-items:flex-end;
@@ -701,6 +702,49 @@
   }
   .colour-page.active .page-visual{ opacity:1; transform:translateX(0); }
 
+  /* ---------- Cartoon/Elegant fan-style toggle (products page detail view) ---------- */
+  .fan-style-toggle{
+    position:absolute;
+    top:0; left:0;
+    display:inline-flex;
+    background:rgba(255,255,255,0.16);
+    border:1px solid rgba(255,255,255,0.4);
+    border-radius:999px;
+    padding:0.25rem;
+    gap:0.15rem;
+    backdrop-filter:blur(6px);
+    z-index:2;
+  }
+  .fan-style-btn{
+    padding:0.42rem 0.95rem;
+    border:none;
+    border-radius:999px;
+    background:none;
+    color:inherit;
+    font-family:'Quicksand', sans-serif;
+    font-weight:700;
+    font-size:0.68rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:background .25s ease, color .25s ease;
+  }
+  .fan-style-btn.is-active{
+    background:#fff;
+    color:var(--ink);
+  }
+  .colour-page.dark-text .fan-style-toggle{
+    background:rgba(43,36,28,0.06);
+    border-color:rgba(43,36,28,0.22);
+  }
+  .colour-page.dark-text .fan-style-btn.is-active{
+    background:var(--ink);
+    color:#fff;
+  }
+  @media (max-width:900px){
+    .fan-style-toggle{ position:static; margin:0 auto 1.4rem; }
+  }
+
   .cartoon-flower{
     position:relative;
     width:min(38vh, 270px);
@@ -708,6 +752,10 @@
     animation:orb-float 6s ease-in-out infinite;
     filter:drop-shadow(0 22px 34px rgba(0,0,0,0.3));
   }
+  /* SVG's own UA stylesheet sets `display` on the element itself, which
+     otherwise beats the plain [hidden] attribute - force it here so the
+     fan-style toggle actually swaps images instead of stacking them. */
+  svg.cartoon-flower[hidden]{ display:none !important; }
   @keyframes orb-float{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-14px); } }
   a.bloom-link{ transition:transform .35s cubic-bezier(.2,.8,.2,1); }
   @media (hover:hover) and (pointer:fine){
@@ -1223,6 +1271,59 @@
     background:var(--ivory);
   }
   .review-card.is-reported{ background:rgba(178,58,58,0.04); }
+
+  /* ---------- Media lightbox: enlarges a review's photo/video on click,
+     for the reviewer's own attachments and everyone reading the review ---------- */
+  .review-media-thumb{ cursor:zoom-in; }
+  .media-lightbox{
+    position:fixed;
+    inset:0;
+    z-index:600;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:4vh 4vw;
+  }
+  .media-lightbox.is-open{ display:flex; }
+  .media-lightbox-backdrop{
+    position:absolute;
+    inset:0;
+    background:rgba(20,15,10,0.85);
+  }
+  .media-lightbox-content{
+    position:relative;
+    z-index:1;
+    max-width:92vw;
+    max-height:92vh;
+    display:flex;
+  }
+  .media-lightbox-content img,
+  .media-lightbox-content video{
+    max-width:92vw;
+    max-height:92vh;
+    width:auto;
+    height:auto;
+    border-radius:10px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+    display:block;
+  }
+  .media-lightbox-close{
+    position:absolute;
+    top:24px; right:28px;
+    z-index:2;
+    width:2.4rem;
+    height:2.4rem;
+    border-radius:50%;
+    border:none;
+    background:rgba(255,255,255,0.12);
+    color:#fff;
+    font-size:1.6rem;
+    line-height:1;
+    cursor:pointer;
+    transition:background .2s ease;
+  }
+  .media-lightbox-close:hover{ background:rgba(255,255,255,0.24); }
+  body.lightbox-open{ overflow:hidden; }
 
   /* ---------- Report-reason modal ---------- */
   .report-modal{

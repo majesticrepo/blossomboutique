@@ -13,6 +13,25 @@
 <svg width="0" height="0" style="position:absolute;">
   <defs>
 
+    <symbol id="cartoonFan" viewBox="0 0 200 200">
+      <g stroke="#2B241C" stroke-width="3" stroke-linejoin="round">
+        <ellipse cx="100" cy="95" rx="13" ry="90" fill="var(--c)" transform="rotate(-80 100 185)"/>
+        <ellipse cx="100" cy="95" rx="13" ry="90" fill="color-mix(in srgb, var(--c) 65%, white)" transform="rotate(-60 100 185)"/>
+        <ellipse cx="100" cy="95" rx="13" ry="90" fill="var(--c)" transform="rotate(-40 100 185)"/>
+        <ellipse cx="100" cy="95" rx="13" ry="90" fill="color-mix(in srgb, var(--c) 65%, white)" transform="rotate(-20 100 185)"/>
+        <ellipse cx="100" cy="95" rx="13" ry="90" fill="var(--c)" transform="rotate(0 100 185)"/>
+        <ellipse cx="100" cy="95" rx="13" ry="90" fill="color-mix(in srgb, var(--c) 65%, white)" transform="rotate(20 100 185)"/>
+        <ellipse cx="100" cy="95" rx="13" ry="90" fill="var(--c)" transform="rotate(40 100 185)"/>
+        <ellipse cx="100" cy="95" rx="13" ry="90" fill="color-mix(in srgb, var(--c) 65%, white)" transform="rotate(60 100 185)"/>
+        <ellipse cx="100" cy="95" rx="13" ry="90" fill="var(--c)" transform="rotate(80 100 185)"/>
+      </g>
+      <g stroke="#2B241C" stroke-width="3.5" stroke-linecap="round">
+        <line x1="100" y1="185" x2="82" y2="197"/>
+        <line x1="100" y1="185" x2="118" y2="197"/>
+      </g>
+      <circle cx="100" cy="185" r="11" fill="#E3B34A" stroke="#2B241C" stroke-width="3"/>
+    </symbol>
+
     <linearGradient id="fanSheen" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#fff" stop-opacity="0.55"/>
       <stop offset="1" stop-color="#fff" stop-opacity="0"/>
@@ -745,7 +764,14 @@
 <section class="colour-page product-page" id="product-red" style="--c:#C0392B;">
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
-    <div class="page-visual"><svg class="cartoon-flower"><use href="#fanRed"/></svg></div>
+    <div class="page-visual">
+      <div class="fan-style-toggle" role="group" aria-label="Fan style">
+        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
+        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
+      </div>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanRed"/></svg>
+      <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
+    </div>
     <div class="page-text">
       <span class="page-eyebrow">Red &middot; Rose</span>
       <h2 class="page-subtitle">Crimson Fan</h2>
@@ -762,7 +788,14 @@
 <section class="colour-page product-page" id="product-orange" style="--c:#D96C2B;">
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
-    <div class="page-visual"><svg class="cartoon-flower"><use href="#fanOrange"/></svg></div>
+    <div class="page-visual">
+      <div class="fan-style-toggle" role="group" aria-label="Fan style">
+        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
+        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
+      </div>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanOrange"/></svg>
+      <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
+    </div>
     <div class="page-text">
       <span class="page-eyebrow">Orange &middot; Marigold</span>
       <h2 class="page-subtitle">Amber Fan</h2>
@@ -779,7 +812,14 @@
 <section class="colour-page product-page dark-text" id="product-yellow" style="--c:#DDAF35;">
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
-    <div class="page-visual"><svg class="cartoon-flower"><use href="#fanYellow"/></svg></div>
+    <div class="page-visual">
+      <div class="fan-style-toggle" role="group" aria-label="Fan style">
+        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
+        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
+      </div>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanYellow"/></svg>
+      <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
+    </div>
     <div class="page-text">
       <span class="page-eyebrow">Yellow &middot; Sunflower</span>
       <h2 class="page-subtitle">Golden Fan</h2>
@@ -796,7 +836,14 @@
 <section class="colour-page product-page" id="product-green" style="--c:#6B8F52;">
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
-    <div class="page-visual"><svg class="cartoon-flower"><use href="#fanGreen"/></svg></div>
+    <div class="page-visual">
+      <div class="fan-style-toggle" role="group" aria-label="Fan style">
+        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
+        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
+      </div>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanGreen"/></svg>
+      <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
+    </div>
     <div class="page-text">
       <span class="page-eyebrow">Green &middot; Jade Orchid</span>
       <h2 class="page-subtitle">Jade Fan</h2>
@@ -813,7 +860,14 @@
 <section class="colour-page product-page" id="product-blue" style="--c:#5F8DBF;">
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
-    <div class="page-visual"><svg class="cartoon-flower"><use href="#fanBlue"/></svg></div>
+    <div class="page-visual">
+      <div class="fan-style-toggle" role="group" aria-label="Fan style">
+        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
+        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
+      </div>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanBlue"/></svg>
+      <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
+    </div>
     <div class="page-text">
       <span class="page-eyebrow">Blue &middot; Hydrangea</span>
       <h2 class="page-subtitle">Sapphire Fan</h2>
@@ -830,7 +884,14 @@
 <section class="colour-page product-page" id="product-purple" style="--c:#8B6FA8;">
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
-    <div class="page-visual"><svg class="cartoon-flower"><use href="#fanPurple"/></svg></div>
+    <div class="page-visual">
+      <div class="fan-style-toggle" role="group" aria-label="Fan style">
+        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
+        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
+      </div>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanPurple"/></svg>
+      <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
+    </div>
     <div class="page-text">
       <span class="page-eyebrow">Purple &middot; Lavender</span>
       <h2 class="page-subtitle">Amethyst Fan</h2>
@@ -847,7 +908,14 @@
 <section class="colour-page product-page dark-text" id="product-pink" style="--c:#E39FB0;">
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
-    <div class="page-visual"><svg class="cartoon-flower"><use href="#fanPink"/></svg></div>
+    <div class="page-visual">
+      <div class="fan-style-toggle" role="group" aria-label="Fan style">
+        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
+        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
+      </div>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanPink"/></svg>
+      <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
+    </div>
     <div class="page-text">
       <span class="page-eyebrow">Pink &middot; Cherry Blossom</span>
       <h2 class="page-subtitle">Sakura Fan</h2>
@@ -864,7 +932,14 @@
 <section class="colour-page product-page" id="product-brown" style="--c:#7B5A3E;">
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
-    <div class="page-visual"><svg class="cartoon-flower"><use href="#fanBrown"/></svg></div>
+    <div class="page-visual">
+      <div class="fan-style-toggle" role="group" aria-label="Fan style">
+        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
+        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
+      </div>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanBrown"/></svg>
+      <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
+    </div>
     <div class="page-text">
       <span class="page-eyebrow">Brown &middot; Chrysanthemum</span>
       <h2 class="page-subtitle">Chestnut Fan</h2>
@@ -881,7 +956,14 @@
 <section class="colour-page product-page" id="product-black" style="--c:#2A2622;">
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
-    <div class="page-visual"><svg class="cartoon-flower"><use href="#fanBlack"/></svg></div>
+    <div class="page-visual">
+      <div class="fan-style-toggle" role="group" aria-label="Fan style">
+        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
+        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
+      </div>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanBlack"/></svg>
+      <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
+    </div>
     <div class="page-text">
       <span class="page-eyebrow">Black &middot; Black Orchid</span>
       <h2 class="page-subtitle">Onyx Fan</h2>
@@ -898,7 +980,14 @@
 <section class="colour-page product-page dark-text" id="product-white" style="--c:#FBF8F2;">
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
-    <div class="page-visual"><svg class="cartoon-flower"><use href="#fanWhite"/></svg></div>
+    <div class="page-visual">
+      <div class="fan-style-toggle" role="group" aria-label="Fan style">
+        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
+        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
+      </div>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanWhite"/></svg>
+      <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
+    </div>
     <div class="page-text">
       <span class="page-eyebrow">White &middot; Lily</span>
       <h2 class="page-subtitle">Ivory Fan</h2>
@@ -915,7 +1004,14 @@
 <section class="colour-page product-page dark-text" id="product-beige" style="--c:#D8C7A8;">
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
-    <div class="page-visual"><svg class="cartoon-flower"><use href="#fanBeige"/></svg></div>
+    <div class="page-visual">
+      <div class="fan-style-toggle" role="group" aria-label="Fan style">
+        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
+        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
+      </div>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanBeige"/></svg>
+      <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
+    </div>
     <div class="page-text">
       <span class="page-eyebrow">Beige &middot; Magnolia</span>
       <h2 class="page-subtitle">Linen Fan</h2>
@@ -932,7 +1028,14 @@
 <section class="colour-page product-page" id="product-gold" style="--c:#9C7A32;">
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
-    <div class="page-visual"><svg class="cartoon-flower"><use href="#fanGold"/></svg></div>
+    <div class="page-visual">
+      <div class="fan-style-toggle" role="group" aria-label="Fan style">
+        <button type="button" class="fan-style-btn is-active" data-style="cartoon">Cartoon</button>
+        <button type="button" class="fan-style-btn" data-style="elegant">Elegant</button>
+      </div>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanGold"/></svg>
+      <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
+    </div>
     <div class="page-text">
       <span class="page-eyebrow">Gold &middot; Peony</span>
       <h2 class="page-subtitle">Champagne Fan</h2>

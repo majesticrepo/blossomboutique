@@ -226,6 +226,53 @@
     const MAX_MEDIA_PER_REVIEW = 4;
     const MAX_FILE_BYTES = 4 * 1024 * 1024; // keep individual files sane for localStorage
 
+    // ----- media lightbox: click any attached photo/video (the reviewer's
+    // own picks while composing, or media on a published review) to see it
+    // enlarged - covers both "the person" and "others" reading reviews -----
+    const mediaLightbox = document.createElement('div');
+    mediaLightbox.className = 'media-lightbox';
+    mediaLightbox.setAttribute('aria-hidden', 'true');
+    mediaLightbox.innerHTML =
+      '<div class="media-lightbox-backdrop"></div>' +
+      '<button type="button" class="media-lightbox-close" aria-label="Close">&times;</button>' +
+      '<div class="media-lightbox-content"></div>';
+    document.body.appendChild(mediaLightbox);
+    const lightboxContent = mediaLightbox.querySelector('.media-lightbox-content');
+    function closeLightbox(){
+      mediaLightbox.classList.remove('is-open');
+      mediaLightbox.setAttribute('aria-hidden', 'true');
+      lightboxContent.innerHTML = '';
+      document.body.classList.remove('lightbox-open');
+    }
+    function openLightbox(mediaEl){
+      lightboxContent.innerHTML = '';
+      let clone;
+      if(mediaEl.tagName === 'VIDEO'){
+        clone = document.createElement('video');
+        clone.src = mediaEl.currentSrc || mediaEl.src;
+        clone.controls = true;
+        clone.autoplay = true;
+        clone.playsInline = true;
+      } else {
+        clone = document.createElement('img');
+        clone.src = mediaEl.currentSrc || mediaEl.src;
+        clone.alt = '';
+      }
+      lightboxContent.appendChild(clone);
+      mediaLightbox.classList.add('is-open');
+      mediaLightbox.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('lightbox-open');
+    }
+    mediaLightbox.querySelector('.media-lightbox-close').addEventListener('click', closeLightbox);
+    mediaLightbox.querySelector('.media-lightbox-backdrop').addEventListener('click', closeLightbox);
+    window.addEventListener('keydown', e => { if(e.key === 'Escape' && mediaLightbox.classList.contains('is-open')) closeLightbox(); });
+    document.addEventListener('click', e => {
+      if(e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO'){
+        const thumb = e.target.closest('.review-media-thumb');
+        if(thumb) openLightbox(e.target);
+      }
+    });
+
     // Set this to a real endpoint to make reviews shared across every visitor
     // instead of just the browser that posted them (see README for how to
     // get one, e.g. a free npoint.io bin). Left blank, reviews stay
@@ -960,6 +1007,28 @@
       link.addEventListener('click', e => {
         e.preventDefault();
         window.location.hash = '';
+      });
+    });
+
+    // ----- Cartoon/Elegant fan-style toggle: each product page has its own
+    // toggle and two overlaid <svg> images (data-style-img="cartoon"/"elegant") -----
+    productPages.forEach(page => {
+      const toggle = page.querySelector('.fan-style-toggle');
+      if(!toggle) return;
+      const buttons = toggle.querySelectorAll('.fan-style-btn');
+      const images = page.querySelectorAll('[data-style-img]');
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const style = btn.dataset.style;
+          buttons.forEach(b => b.classList.toggle('is-active', b === btn));
+          // SVG elements don't reliably reflect the `.hidden` IDL property to
+          // the actual attribute (unlike plain HTML elements), so toggle the
+          // content attribute directly instead.
+          images.forEach(img => {
+            if(img.dataset.styleImg === style) img.removeAttribute('hidden');
+            else img.setAttribute('hidden', '');
+          });
+        });
       });
     });
   }
