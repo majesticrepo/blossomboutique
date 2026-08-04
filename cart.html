@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>About Us — Blossom Boutique</title>
+<title>Cart — Blossom Boutique</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -19,7 +19,7 @@
       <li><a href="about.html">About Us</a></li>
       <li><a href="reviews.html">Reviews</a></li>
       <li><a href="contact.html">Contacts</a></li>
-      <li><a href="cart.html" class="nav-cart-link">Cart<span class="cart-count" id="cartCount" hidden>0</span></a></li>
+      <li><a href="cart.html" class="nav-cart-link is-active">Cart<span class="cart-count" id="cartCount" hidden>0</span></a></li>
     </ul>
     <div class="nav-dots">
     <a class="nav-dot" href="index.html#page-red" style="background:#C0392B;" title="Red"></a>
@@ -41,13 +41,22 @@
   </div>
 </nav>
 
-<section class="about" id="about" style="padding-top:20vh; min-height:100vh;">
-  <div class="about-mark">枝</div>
-  <div class="about-text">
-    <span class="section-eyebrow">About Us</span>
-    <h2 class="section-title">Our <em>story</em></h2>
-    <p>Blossom Boutique began with a single fan and a wish to make every gift feel unwrapped slowly. Each fan is boxed by hand in silk, gold, and the colour it carries — a quiet, elegant ritual from our hands to yours.</p>
+<section class="cart-page" id="cart" style="padding-top:20vh;">
+
+  <div class="section-head">
+    <span class="section-eyebrow">Your Selection</span>
+    <h2 class="section-title">Your <em>Cart</em></h2>
   </div>
+
+  <div class="cart-wrap" id="cartWrap">
+    <p class="cart-empty" id="cartEmpty">Your cart is empty. <a href="products.html">Browse the collection &rarr;</a></p>
+    <ul class="cart-list" id="cartList" hidden></ul>
+    <div class="cart-summary" id="cartSummary" hidden>
+      <span class="cart-total-label">Items</span>
+      <span class="cart-total-value" id="cartTotalCount">0</span>
+    </div>
+  </div>
+
 </section>
 
 <footer>
