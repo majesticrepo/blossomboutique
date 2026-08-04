@@ -1552,7 +1552,8 @@
       z-index:360;
     }
     #navLinks.open{ height:100vh; }
-    #navLinks a{
+    #navLinks a,
+    #navLinks .nav-account-name{
       color:var(--gold-deep) !important;
       font-size:0.95rem;
     }
@@ -2165,3 +2166,159 @@
   @media (prefers-reduced-motion: reduce){
     .unfold-scroll-arrow{ animation:none; }
   }
+
+  /* ---------- Nav account link (Sign In / Hi, <nickname> + Log out) ---------- */
+  .nav-account-name{
+    color:var(--gold-deep);
+    font-family:'Quicksand', sans-serif;
+    font-weight:600;
+    letter-spacing:0.14em;
+    font-size:0.82rem;
+    text-transform:uppercase;
+    transition:color .5s ease;
+  }
+  .nav.on-hero .nav-account-name{ color:#fff; }
+  .nav-account-logout{
+    margin-left:0.5rem;
+    font-size:0.82em;
+    opacity:0.75;
+  }
+
+  /* ---------- Account modal: sign up / log in with email, Google or phone.
+     No backend on this site, so it's a local-only profile - the same
+     identifier just restores the nickname + cart saved on this browser. ---------- */
+  .account-modal{
+    position:fixed;
+    inset:0;
+    z-index:600;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:1.4rem;
+  }
+  .account-modal[hidden]{ display:none; }
+  .account-modal-backdrop{
+    position:absolute;
+    inset:0;
+    background:rgba(43,36,28,0.45);
+  }
+  .account-modal-panel{
+    position:relative;
+    background:var(--ivory);
+    border-radius:16px;
+    padding:2.2rem 1.8rem;
+    max-width:400px;
+    width:100%;
+    max-height:90vh;
+    overflow-y:auto;
+    box-shadow:0 20px 50px rgba(43,36,28,0.3);
+  }
+  .account-modal-close{
+    position:absolute;
+    top:1rem;
+    right:1rem;
+    width:2rem;
+    height:2rem;
+    border-radius:50%;
+    border:none;
+    background:none;
+    color:var(--ink-soft);
+    font-size:1.4rem;
+    line-height:1;
+    cursor:pointer;
+    transition:background .2s ease;
+  }
+  .account-modal-close:hover{ background:rgba(43,36,28,0.07); }
+  .account-modal-panel h3{
+    font-family:'Shippori Mincho', serif;
+    font-size:1.3rem;
+    color:var(--ink);
+    margin:0 0 0.4rem;
+  }
+  .account-modal-sub{
+    font-size:0.85rem;
+    line-height:1.55;
+    color:var(--ink-soft);
+    margin-bottom:1.3rem;
+  }
+  .account-method-row{
+    display:flex;
+    gap:0.5rem;
+    margin-bottom:1.3rem;
+  }
+  .account-method-btn{
+    flex:1 1 0;
+    padding:0.55rem 0.4rem;
+    border:1px solid var(--hair);
+    border-radius:999px;
+    background:none;
+    color:var(--ink);
+    font-family:'Quicksand', sans-serif;
+    font-weight:700;
+    font-size:0.72rem;
+    letter-spacing:0.04em;
+    cursor:pointer;
+    transition:background .25s ease, border-color .25s ease, color .25s ease;
+  }
+  .account-method-btn.is-active{
+    background:var(--gold);
+    border-color:var(--gold);
+    color:#fff;
+  }
+  .account-field{
+    display:block;
+    margin-bottom:1.1rem;
+  }
+  .account-field > span{
+    display:block;
+    font-size:0.72rem;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--gold-deep);
+    margin-bottom:0.5rem;
+  }
+  .account-field input{
+    width:100%;
+    font-family:'Quicksand', sans-serif;
+    font-size:0.98rem;
+    color:var(--ink);
+    background:var(--paper);
+    border:1px solid var(--hair);
+    border-radius:10px;
+    padding:0.75rem 0.9rem;
+    transition:border-color .25s ease, box-shadow .25s ease;
+  }
+  .account-field input:focus{
+    outline:none;
+    border-color:var(--gold);
+    box-shadow:0 0 0 3px rgba(198,161,91,0.2);
+  }
+  .account-modal-error{
+    color:#B23A3A;
+    font-size:0.85rem;
+    margin:-0.4rem 0 1rem;
+  }
+  .account-modal-note{
+    font-size:0.8rem;
+    color:var(--ink-soft);
+    text-align:center;
+    margin-top:1rem;
+  }
+  .account-submit-btn{
+    display:block;
+    width:100%;
+    padding:0.85rem;
+    font-family:'Quicksand', sans-serif;
+    font-weight:700;
+    font-size:0.78rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:#fff;
+    background:var(--gold);
+    border:1.5px solid var(--gold);
+    border-radius:999px;
+    cursor:pointer;
+    transition:background .25s ease, transform .25s ease;
+  }
+  .account-submit-btn:hover{ background:var(--gold-deep); border-color:var(--gold-deep); transform:translateY(-2px); }
+  body.account-modal-open{ overflow:hidden; }
