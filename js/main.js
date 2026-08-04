@@ -724,6 +724,31 @@
     }
   }
 
+  // ----- contact.html: simple client-side "send" - there's no backend here,
+  // so this just validates and shows a confirmation, the same honest way the
+  // reviews form works without one. -----
+  const contactForm = document.getElementById('contactForm');
+  if(contactForm){
+    const contactFeedback = document.getElementById('contactFeedback');
+    contactForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const name = document.getElementById('contactName').value.trim();
+      const email = document.getElementById('contactEmail').value.trim();
+      const message = document.getElementById('contactMessage').value.trim();
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+      if(!name || !emailOk || !message){
+        contactFeedback.classList.add('is-error');
+        contactFeedback.textContent = 'Please fill in your name, a valid email, and a message.';
+        return;
+      }
+
+      contactFeedback.classList.remove('is-error');
+      contactFeedback.textContent = 'Thank you, ' + name + ' - your message has been sent. We\'ll reply soon!';
+      contactForm.reset();
+    });
+  }
+
   const wrap = document.getElementById('heroPetals');
   const petalsPerSpawn = 34;
   for(let i=0; wrap && i<petalsPerSpawn; i++){
@@ -778,12 +803,40 @@
       badge.hidden = count === 0;
     });
   }
+  // ----- little two-note "ding" so adding to cart is audible, not just visual.
+  // Synthesised with the Web Audio API rather than an audio file, so there's
+  // nothing to fetch and it works the instant the page loads. -----
+  let sharedAudioCtx = null;
+  function playCartChime(){
+    try{
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if(!AudioCtx) return;
+      if(!sharedAudioCtx) sharedAudioCtx = new AudioCtx();
+      if(sharedAudioCtx.state === 'suspended') sharedAudioCtx.resume();
+      const ctx = sharedAudioCtx;
+      const now = ctx.currentTime;
+      [[880, 0], [1318.5, 0.09]].forEach(([freq, delay]) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + delay);
+        gain.gain.setValueAtTime(0, now + delay);
+        gain.gain.linearRampToValueAtTime(0.22, now + delay + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + delay + 0.35);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(now + delay);
+        osc.stop(now + delay + 0.4);
+      });
+    }catch(e){ /* audio is a nice-to-have, never block the cart on it */ }
+  }
+
   function addToCart(product, colour, scent, price){
     const cart = getCart();
     const existing = cart.find(item => item.product === product);
     if(existing){ existing.qty += 1; }
     else{ cart.push({ product, colour, scent, price: Number(price) || DEFAULT_PRICE, qty: 1 }); }
     saveCart(cart);
+    playCartChime();
     refreshCartViews();
   }
   function setQty(index, qty){
@@ -1091,6 +1144,29 @@
 
       checkoutWrap.hidden = true;
       checkoutSuccess.hidden = false;
+    });
+  }
+
+  // ----- products.html: single side toggle button (not tied to any one
+  // product) that swaps every card's photo between the original striped
+  // panel and the elegant lace-bordered one. Only the photo changes; the
+  // rest of each card is untouched. Gold = on, see-through = off, and the
+  // choice is remembered between visits. -----
+  const styleToggleSide = document.getElementById('styleToggleSide');
+  const elegantGrid = document.querySelector('.product-grid');
+  if(styleToggleSide && elegantGrid){
+    const GRID_STYLE_KEY = 'bb_grid_style';
+    function applyGridStyle(isElegant){
+      elegantGrid.classList.toggle('style-elegant', isElegant);
+      styleToggleSide.classList.toggle('is-active', isElegant);
+      styleToggleSide.setAttribute('aria-pressed', String(isElegant));
+    }
+    let isElegant = localStorage.getItem(GRID_STYLE_KEY) === '1';
+    applyGridStyle(isElegant);
+    styleToggleSide.addEventListener('click', () => {
+      isElegant = !isElegant;
+      try{ localStorage.setItem(GRID_STYLE_KEY, isElegant ? '1' : '0'); }catch(e){}
+      applyGridStyle(isElegant);
     });
   }
 

@@ -600,6 +600,86 @@
   }
   .btn-buy:hover{ background:var(--gold-deep); border-color:var(--gold-deep); transform:translateY(-2px); }
 
+  /* ---------- Elegant swatch style toggle (products.html only): a single
+     button fixed to the side of the page - not attached to any one product.
+     Off = see-through outline; on = solid gold, and every card's photo swaps
+     from the striped "cartoon" panel to a lace-bordered "elegant" one. Only
+     the .product-card-photo look changes - name/scent/buttons stay put. ---------- */
+  .style-toggle-side{
+    position:fixed;
+    top:50%;
+    right:0;
+    transform:translateY(-50%);
+    z-index:120;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:0.35rem;
+    padding:1.1rem 0.75rem;
+    background:rgba(255,249,238,0.55);
+    border:1.5px solid var(--gold);
+    border-right:none;
+    border-radius:14px 0 0 14px;
+    color:var(--gold-deep);
+    font-family:'Quicksand', sans-serif;
+    font-weight:700;
+    font-size:0.6rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    line-height:1.4;
+    text-align:center;
+    cursor:pointer;
+    box-shadow:-4px 6px 18px rgba(43,36,28,0.1);
+    backdrop-filter:blur(6px);
+    transition:background .3s ease, color .3s ease;
+  }
+  .style-toggle-side-icon{ font-size:1.3rem; line-height:1; }
+  .style-toggle-side:hover{ background:rgba(255,249,238,0.9); }
+  .style-toggle-side.is-active{
+    background:var(--gold);
+    color:#fff;
+  }
+  .style-toggle-side.is-active:hover{ background:var(--gold-deep); }
+  @media (max-width:700px){
+    /* a vertical-centre tab collides with the colour row on short mobile
+       screens - anchor it to the bottom corner instead, like a small fab */
+    .style-toggle-side{
+      top:auto;
+      bottom:18px;
+      transform:none;
+      flex-direction:row;
+      border-radius:999px 0 0 999px;
+      padding:0.7rem 0.9rem;
+      font-size:0.56rem;
+    }
+    .style-toggle-side-icon{ font-size:1.1rem; }
+  }
+
+  .product-grid.style-elegant .product-card-photo{
+    border-radius:18px;
+    box-shadow:inset 0 0 0 1px rgba(43,36,28,0.14);
+  }
+  .product-grid.style-elegant .product-card-photo::before,
+  .product-grid.style-elegant .product-card-photo::after{
+    width:24%;
+    opacity:0.95;
+    mix-blend-mode:overlay;
+    background-repeat:repeat-y;
+    background-size:100% 140px;
+    background-position:center top;
+    background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc2MCcgaGVpZ2h0PScxNDAnIHZpZXdCb3g9JzAgMCA2MCAxNDAnPgo8ZyBmaWxsPSdub25lJyBzdHJva2U9JyNmZmZmZmYnIHN0cm9rZS13aWR0aD0nMicgc3Ryb2tlLWxpbmVjYXA9J3JvdW5kJyBvcGFjaXR5PScwLjknPgo8cGF0aCBkPSdNMzAgMCBDMTAgMTUgMTAgMzUgMzAgNTAgQzUwIDY1IDUwIDg1IDMwIDEwMCBDMTAgMTE1IDEwIDEzNSAzMCAxNDAnLz4KPC9nPgo8ZyBmaWxsPScjZmZmZmZmJyBvcGFjaXR5PScwLjg1Jz4KPGNpcmNsZSBjeD0nMzAnIGN5PScyNScgcj0nNCcvPgo8Y2lyY2xlIGN4PSczMCcgY3k9Jzc1JyByPSc0Jy8+CjxjaXJjbGUgY3g9JzMwJyBjeT0nMTI1JyByPSc0Jy8+CjxjaXJjbGUgY3g9JzE0JyBjeT0nNTAnIHI9JzIuNCcvPgo8Y2lyY2xlIGN4PSc0NicgY3k9JzUwJyByPScyLjQnLz4KPGNpcmNsZSBjeD0nMTQnIGN5PScxMDAnIHI9JzIuNCcvPgo8Y2lyY2xlIGN4PSc0NicgY3k9JzEwMCcgcj0nMi40Jy8+CjwvZz4KPC9zdmc+");
+  }
+  .product-grid.style-elegant .product-card-photo::before{ left:0; border-right:1px solid rgba(43,36,28,0.4); }
+  .product-grid.style-elegant .product-card-photo::after{ right:0; border-left:1px solid rgba(43,36,28,0.4); }
+  /* the near-white Ivory Fan card needs dark-gold lace instead of white,
+     multiply-blended so it reads against the pale panel rather than vanishing */
+  .product-grid.style-elegant .product-card.is-light .product-card-photo::before,
+  .product-grid.style-elegant .product-card.is-light .product-card-photo::after{
+    mix-blend-mode:multiply;
+    opacity:0.5;
+    background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc2MCcgaGVpZ2h0PScxNDAnIHZpZXdCb3g9JzAgMCA2MCAxNDAnPgo8ZyBmaWxsPSdub25lJyBzdHJva2U9JyM5QzdBMzInIHN0cm9rZS13aWR0aD0nMicgc3Ryb2tlLWxpbmVjYXA9J3JvdW5kJyBvcGFjaXR5PScwLjknPgo8cGF0aCBkPSdNMzAgMCBDMTAgMTUgMTAgMzUgMzAgNTAgQzUwIDY1IDUwIDg1IDMwIDEwMCBDMTAgMTE1IDEwIDEzNSAzMCAxNDAnLz4KPC9nPgo8ZyBmaWxsPScjOUM3QTMyJyBvcGFjaXR5PScwLjg1Jz4KPGNpcmNsZSBjeD0nMzAnIGN5PScyNScgcj0nNCcvPgo8Y2lyY2xlIGN4PSczMCcgY3k9Jzc1JyByPSc0Jy8+CjxjaXJjbGUgY3g9JzMwJyBjeT0nMTI1JyByPSc0Jy8+CjxjaXJjbGUgY3g9JzE0JyBjeT0nNTAnIHI9JzIuNCcvPgo8Y2lyY2xlIGN4PSc0NicgY3k9JzUwJyByPScyLjQnLz4KPGNpcmNsZSBjeD0nMTQnIGN5PScxMDAnIHI9JzIuNCcvPgo8Y2lyY2xlIGN4PSc0NicgY3k9JzEwMCcgcj0nMi40Jy8+CjwvZz4KPC9zdmc+");
+  }
+
   /* clickable swatches */
   a.flower-item{ text-decoration:none; color:inherit; display:block; cursor:pointer; }
   a.bloom-link{ display:block; cursor:pointer; }
@@ -708,7 +788,7 @@
     position:static;
     align-self:center;
     display:inline-flex;
-    flex-direction:column;
+    flex-direction:row;
     background:rgba(255,255,255,0.16);
     border:1px solid rgba(255,255,255,0.4);
     border-radius:999px;
@@ -733,16 +813,17 @@
     cursor:pointer;
     transition:background .25s ease, color .25s ease;
   }
+  /* "see-through" until pressed, then fills solid gold - not white */
   .fan-style-btn.is-active{
-    background:#fff;
-    color:var(--ink);
+    background:var(--gold);
+    color:#fff;
   }
   .colour-page.dark-text .fan-style-toggle{
     background:rgba(43,36,28,0.06);
     border-color:rgba(43,36,28,0.22);
   }
   .colour-page.dark-text .fan-style-btn.is-active{
-    background:var(--ink);
+    background:var(--gold-deep);
     color:#fff;
   }
   @media (max-width:900px){
@@ -952,6 +1033,139 @@
     font-weight:500;
   }
 
+  /* ---------- Small decorative blossom divider - used between the intro and
+     the expanded content on home/about/contact ---------- */
+  .section-divider{
+    display:block;
+    width:200px;
+    height:36px;
+    margin:0 auto 3rem;
+    color:var(--gold);
+  }
+
+  /* ---------- Reusable feature/value card grid - the home page's "Our
+     Promise" strip, About's "Our Values", and Contact's info cards all
+     share this so the site reads as one system. ---------- */
+  .feature-grid{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:1.8rem;
+    max-width:1300px;
+    margin:0 auto;
+  }
+  @media (max-width:900px){
+    .feature-grid{ grid-template-columns:repeat(2, 1fr); }
+  }
+  @media (max-width:560px){
+    .feature-grid{ grid-template-columns:1fr; }
+  }
+  .feature-card{
+    background:var(--ivory);
+    border:1px solid var(--hair);
+    border-radius:16px;
+    padding:2.1rem 1.6rem;
+    text-align:left;
+    transition:transform .35s ease, box-shadow .35s ease;
+  }
+  .feature-card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 14px 30px rgba(43,36,28,0.1);
+  }
+  .feature-icon{
+    width:40px;
+    height:40px;
+    margin-bottom:1.1rem;
+    color:var(--gold);
+  }
+  .feature-card h3{
+    font-family:'Shippori Mincho', serif;
+    font-weight:600;
+    font-size:1.1rem;
+    margin:0 0 0.6rem;
+    color:var(--ink);
+  }
+  .feature-card p{
+    font-size:0.88rem;
+    line-height:1.7;
+    color:var(--ink-soft);
+    margin:0;
+  }
+  .feature-card a{ color:var(--gold-deep); font-weight:700; }
+  .section-intro{
+    max-width:640px;
+    margin:-2.6rem auto 3.4rem;
+    text-align:center;
+    font-size:1.02rem;
+    line-height:1.9;
+    color:var(--ink-soft);
+  }
+
+  /* ---------- About page: "Our Craft" numbered process row ---------- */
+  .process-row{
+    display:flex;
+    justify-content:center;
+    gap:2.4rem;
+    max-width:1200px;
+    margin:0 auto;
+    flex-wrap:wrap;
+  }
+  .process-step{
+    flex:1 1 220px;
+    max-width:260px;
+    text-align:center;
+  }
+  .process-number{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:48px;
+    height:48px;
+    margin-bottom:1.1rem;
+    border:1.5px solid var(--gold);
+    border-radius:50%;
+    font-family:'Shippori Mincho', serif;
+    font-size:1rem;
+    color:var(--gold-deep);
+  }
+  .process-step h3{
+    font-family:'Shippori Mincho', serif;
+    font-weight:600;
+    font-size:1.05rem;
+    margin:0 0 0.5rem;
+  }
+  .process-step p{
+    font-size:0.86rem;
+    line-height:1.7;
+    color:var(--ink-soft);
+    margin:0;
+  }
+
+  /* ---------- About page: founder note ---------- */
+  .founder-note{
+    max-width:720px;
+    margin:0 auto;
+    text-align:center;
+  }
+  .founder-note blockquote{
+    margin:0 0 1.2rem;
+    font-family:'Shippori Mincho', serif;
+    font-style:italic;
+    font-size:clamp(1.15rem, 2.4vw, 1.5rem);
+    line-height:1.7;
+    color:var(--ink);
+  }
+  .founder-note cite{
+    font-style:normal;
+    font-size:0.75rem;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--gold-deep);
+  }
+
+  /* ---------- Contact page: form reuses .review-form styling for a
+     consistent look, this just centres its wrapper on the page ---------- */
+  .contact-form-section{ background:var(--paper); }
+
   /* ---------- FOOTER / CONTACT ---------- */
   footer{
     text-align:center;
@@ -1069,6 +1283,7 @@
     margin-bottom:0.5rem;
   }
   .review-field input[type="text"],
+  .review-field input[type="email"],
   .review-field textarea{
     width:100%;
     font-family:'Quicksand', sans-serif;
@@ -1082,6 +1297,7 @@
     transition:border-color .25s ease, box-shadow .25s ease;
   }
   .review-field input[type="text"]:focus,
+  .review-field input[type="email"]:focus,
   .review-field textarea:focus{
     outline:none;
     border-color:var(--gold);
