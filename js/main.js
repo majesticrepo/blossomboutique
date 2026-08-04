@@ -119,11 +119,9 @@
     });
   }
 
-  // ----- Bloom colour palette, the cursor tint, and the click-burst transition
-  // all only make sense where the colour-overlay markup exists (index.html) -
-  // elsewhere (including the products page) the same swatch links just
-  // navigate as plain browser links back to index.html#page-... -----
-  if(overlay){
+  // ----- Bloom colour palette + cursor tint: these apply on every page that
+  // has colour swatches - home's flower grid, the products page's colour
+  // row, and the product cards - not just index.html. -----
   const bloomPalette = {
     red:'#C0392B', orange:'#D96C2B', yellow:'#DDAF35', green:'#6B8F52',
     blue:'#5F8DBF', purple:'#8B6FA8', pink:'#E39FB0', brown:'#7B5A3E',
@@ -136,12 +134,13 @@
       const swatchClass = [...item.classList].find(c => c.startsWith('c-'));
       if(swatchClass) return swatchClass.slice(2);
     }
-    const page = link.closest('[id^="page-"], [id^="detail-"]');
-    if(page) return page.id.replace('page-', '').replace('detail-', '');
+    const page = link.closest('[id^="page-"], [id^="detail-"], [id^="product-"]');
+    if(page) return page.id.replace('page-', '').replace('detail-', '').replace('product-', '');
     return null;
   }
 
   function bloomColour(link){
+    if(link.dataset.colourHex) return link.dataset.colourHex;
     return bloomPalette[bloomNameFromLink(link)] || '#C6A15B';
   }
 
@@ -152,7 +151,7 @@
       const hex = bloomColour(link);
       // A white ring on a white fill would be invisible, so white gets a
       // gold ring instead - every other colour keeps its white ring.
-      const ringColour = hex === '#FFFFFF' ? '#C6A15B' : 'white';
+      const ringColour = (hex === '#FFFFFF' || hex === '#FBF8F2') ? '#C6A15B' : 'white';
       const cursorSvg = "<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30'>"
         + "<circle cx='15' cy='15' r='11' fill='" + hex + "' stroke='" + ringColour + "' stroke-width='2.5'/></svg>";
       const cursorUrl = 'url("data:image/svg+xml,' + encodeURIComponent(cursorSvg) + '") 15 15, pointer';
@@ -161,8 +160,10 @@
     });
   }
 
-  // ----- Click a bloom: it grows into a full-screen burst of its colour,
-  // transitioning into the next page, then fades to reveal it -----
+  // ----- Click a bloom: only on index.html, where the colour-overlay exists,
+  // does clicking grow it into a full-screen burst transition; elsewhere
+  // (including the products page) the same links navigate their own way -----
+  if(overlay){
   const burst = document.getElementById('flowerBurst');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -700,9 +701,17 @@
   }
 
 // ----- Cart: localStorage-backed, shared across every page via the nav
-  // badge; products.html's Add to Cart/Buy buttons write to it and
-  // cart.html reads it back. -----
+  // badge and a Temu-style slide-in drawer. products.html's Add to Cart/Buy
+  // buttons (grid cards and the single-product overlay) write to it, and
+  // cart.html plus the drawer both read it back. -----
   const CART_KEY = 'bb_cart';
+  const DEFAULT_PRICE = 20.54;
+  const colourHex = {
+    Red:'#C0392B', Orange:'#D96C2B', Yellow:'#DDAF35', Green:'#6B8F52',
+    Blue:'#5F8DBF', Purple:'#8B6FA8', Pink:'#E39FB0', Brown:'#7B5A3E',
+    Black:'#2A2622', White:'#FBF8F2', Beige:'#D8C7A8', Gold:'#9C7A32',
+  };
+
   function getCart(){
     try{ return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
     catch(e){ return []; }
@@ -710,43 +719,108 @@
   function saveCart(cart){
     try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch(e){}
   }
+  function cartItemPrice(item){ return Number(item.price) || DEFAULT_PRICE; }
+  function cartCount(cart){ return cart.reduce((sum, item) => sum + item.qty, 0); }
+  function cartSubtotal(cart){ return cart.reduce((sum, item) => sum + cartItemPrice(item) * item.qty, 0); }
+  function formatPrice(n){ return '$' + n.toFixed(2); }
+
   function updateCartBadge(){
-    const badge = document.getElementById('cartCount');
-    if(!badge) return;
-    const count = getCart().reduce((sum, item) => sum + item.qty, 0);
-    badge.textContent = count;
-    badge.hidden = count === 0;
+    const count = cartCount(getCart());
+    document.querySelectorAll('#cartCount, .cart-count').forEach(badge => {
+      badge.textContent = count;
+      badge.hidden = count === 0;
+    });
   }
-  function addToCart(product, colour, scent){
+  function addToCart(product, colour, scent, price){
     const cart = getCart();
     const existing = cart.find(item => item.product === product);
-    if(existing){ existing.qty += 1; } else { cart.push({ product, colour, scent, qty: 1 }); }
+    if(existing){ existing.qty += 1; }
+    else{ cart.push({ product, colour, scent, price: Number(price) || DEFAULT_PRICE, qty: 1 }); }
     saveCart(cart);
-    updateCartBadge();
+    refreshCartViews();
   }
-  updateCartBadge();
+  function setQty(index, qty){
+    const cart = getCart();
+    if(!cart[index]) return;
+    if(qty <= 0){ cart.splice(index, 1); } else { cart[index].qty = qty; }
+    saveCart(cart);
+    refreshCartViews();
+  }
+  function removeFromCart(index){
+    const cart = getCart();
+    cart.splice(index, 1);
+    saveCart(cart);
+    refreshCartViews();
+  }
+
+  // ----- shared line-item row builder: used by both the full cart page
+  // (cart.html) and the nav drawer, each with its own quantity +/- steppers -----
+  function buildCartItemRow(item, index){
+    const li = document.createElement('li');
+    li.className = 'cart-item';
+
+    const swatch = document.createElement('div');
+    swatch.className = 'cart-item-swatch';
+    swatch.style.background = colourHex[item.colour] || '#ccc';
+
+    const info = document.createElement('div');
+    info.className = 'cart-item-info';
+    const name = document.createElement('div');
+    name.className = 'cart-item-name';
+    name.textContent = item.product;
+    const scent = document.createElement('div');
+    scent.className = 'cart-item-scent';
+    scent.textContent = item.scent;
+    const price = document.createElement('div');
+    price.className = 'cart-item-price';
+    price.textContent = formatPrice(cartItemPrice(item));
+    info.append(name, scent, price);
+
+    const stepper = document.createElement('div');
+    stepper.className = 'qty-stepper';
+    const minus = document.createElement('button');
+    minus.type = 'button';
+    minus.textContent = '−';
+    minus.setAttribute('aria-label', 'Decrease quantity');
+    minus.addEventListener('click', () => setQty(index, item.qty - 1));
+    const qtyLabel = document.createElement('span');
+    qtyLabel.textContent = item.qty;
+    const plus = document.createElement('button');
+    plus.type = 'button';
+    plus.textContent = '+';
+    plus.setAttribute('aria-label', 'Increase quantity');
+    plus.addEventListener('click', () => setQty(index, item.qty + 1));
+    stepper.append(minus, qtyLabel, plus);
+
+    const remove = document.createElement('button');
+    remove.className = 'cart-item-remove';
+    remove.type = 'button';
+    remove.textContent = 'Remove';
+    remove.addEventListener('click', () => removeFromCart(index));
+
+    li.append(swatch, info, stepper, remove);
+    return li;
+  }
 
   document.querySelectorAll('.btn-cart').forEach(btn => {
-    btn.addEventListener('click', () => addToCart(btn.dataset.product, btn.dataset.colour, btn.dataset.scent));
+    btn.addEventListener('click', () => addToCart(btn.dataset.product, btn.dataset.colour, btn.dataset.scent, btn.dataset.price));
   });
   document.querySelectorAll('.btn-buy').forEach(btn => {
     btn.addEventListener('click', () => {
-      addToCart(btn.dataset.product, btn.dataset.colour, btn.dataset.scent);
+      addToCart(btn.dataset.product, btn.dataset.colour, btn.dataset.scent, btn.dataset.price);
       window.location.href = 'cart.html';
     });
   });
 
+  // ----- full cart page (cart.html) -----
   const cartList = document.getElementById('cartList');
+  let renderCartPage = () => {};
   if(cartList){
     const cartEmpty = document.getElementById('cartEmpty');
     const cartSummary = document.getElementById('cartSummary');
     const cartTotalCount = document.getElementById('cartTotalCount');
-    const colourHex = {
-      Red:'#C0392B', Orange:'#D96C2B', Yellow:'#DDAF35', Green:'#6B8F52',
-      Blue:'#5F8DBF', Purple:'#8B6FA8', Pink:'#E39FB0', Brown:'#7B5A3E',
-      Black:'#2A2622', White:'#FBF8F2', Beige:'#D8C7A8', Gold:'#9C7A32',
-    };
-    function renderCart(){
+    const cartTotalPrice = document.getElementById('cartTotalPrice');
+    renderCartPage = function(){
       const cart = getCart();
       if(cart.length === 0){
         cartEmpty.hidden = false;
@@ -758,41 +832,134 @@
       cartList.hidden = false;
       cartSummary.hidden = false;
       cartList.innerHTML = '';
-      cart.forEach((item, index) => {
-        const li = document.createElement('li');
-        li.className = 'cart-item';
-        const swatch = document.createElement('div');
-        swatch.className = 'cart-item-swatch';
-        swatch.style.background = colourHex[item.colour] || '#ccc';
-        const info = document.createElement('div');
-        info.className = 'cart-item-info';
-        const name = document.createElement('div');
-        name.className = 'cart-item-name';
-        name.textContent = item.product;
-        const scent = document.createElement('div');
-        scent.className = 'cart-item-scent';
-        scent.textContent = item.scent;
-        info.append(name, scent);
-        const qty = document.createElement('span');
-        qty.className = 'cart-item-qty';
-        qty.textContent = 'Qty ' + item.qty;
-        const remove = document.createElement('button');
-        remove.className = 'cart-item-remove';
-        remove.dataset.index = index;
-        remove.textContent = 'Remove';
-        li.append(swatch, info, qty, remove);
-        cartList.appendChild(li);
-      });
-      cartTotalCount.textContent = cart.reduce((sum, item) => sum + item.qty, 0);
+      cart.forEach((item, index) => cartList.appendChild(buildCartItemRow(item, index)));
+      cartTotalCount.textContent = cartCount(cart);
+      cartTotalPrice.textContent = formatPrice(cartSubtotal(cart));
+    };
+  }
+
+  // ----- Temu-style slide-in cart drawer: built once in JS and appended to
+  // every page's <body>, so the nav's Cart link opens it instead of always
+  // navigating away - cart.html itself stays as the full-page fallback. -----
+  function buildCartDrawer(){
+    const backdrop = document.createElement('div');
+    backdrop.className = 'cart-drawer-backdrop';
+
+    const drawer = document.createElement('aside');
+    drawer.className = 'cart-drawer';
+    drawer.setAttribute('aria-hidden', 'true');
+    drawer.innerHTML =
+      '<div class="cart-drawer-head">' +
+        '<h3>Your Cart</h3>' +
+        '<button type="button" class="cart-drawer-close" aria-label="Close cart">&times;</button>' +
+      '</div>' +
+      '<ul class="cart-drawer-list"></ul>' +
+      '<p class="cart-drawer-empty">Your cart is empty.</p>' +
+      '<div class="cart-drawer-foot">' +
+        '<div class="cart-drawer-subtotal"><span>Subtotal</span><span class="cart-drawer-subtotal-value"></span></div>' +
+        '<a class="btn-buy cart-drawer-checkout" href="cart.html">View Cart &amp; Checkout</a>' +
+      '</div>';
+
+    document.body.append(backdrop, drawer);
+
+    function open(){
+      render();
+      drawer.classList.add('is-open');
+      backdrop.classList.add('is-open');
+      drawer.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('cart-drawer-open');
     }
-    cartList.addEventListener('click', e => {
-      const btn = e.target.closest('.cart-item-remove');
-      if(!btn) return;
-      const cart = getCart();
-      cart.splice(Number(btn.dataset.index), 1);
-      saveCart(cart);
-      updateCartBadge();
-      renderCart();
+    function close(){
+      drawer.classList.remove('is-open');
+      backdrop.classList.remove('is-open');
+      drawer.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('cart-drawer-open');
+    }
+    drawer.querySelector('.cart-drawer-close').addEventListener('click', close);
+    backdrop.addEventListener('click', close);
+    window.addEventListener('keydown', e => { if(e.key === 'Escape' && drawer.classList.contains('is-open')) close(); });
+
+    document.querySelectorAll('.nav-cart-link').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        open();
+      });
     });
-    renderCart();
+
+    function render(){
+      const cart = getCart();
+      const list = drawer.querySelector('.cart-drawer-list');
+      const empty = drawer.querySelector('.cart-drawer-empty');
+      const foot = drawer.querySelector('.cart-drawer-foot');
+      list.innerHTML = '';
+      if(cart.length === 0){
+        empty.hidden = false;
+        list.hidden = true;
+        foot.hidden = true;
+        return;
+      }
+      empty.hidden = true;
+      list.hidden = false;
+      foot.hidden = false;
+      cart.forEach((item, index) => list.appendChild(buildCartItemRow(item, index)));
+      drawer.querySelector('.cart-drawer-subtotal-value').textContent = formatPrice(cartSubtotal(cart));
+    }
+
+    return { render };
+  }
+  const cartDrawer = buildCartDrawer();
+
+  function refreshCartViews(){
+    updateCartBadge();
+    renderCartPage();
+    cartDrawer.render();
+  }
+  refreshCartViews();
+
+  // ----- products.html: single-product detail overlay. Clicking a product
+  // card shows just that one colour full-screen, with its price and cart
+  // actions - reuses the same .colour-page visuals/transition as index.html's
+  // overlay, but lives in its own #productOverlay container with #product-
+  // hash routing so the two never collide. -----
+  const productOverlay = document.getElementById('productOverlay');
+  if(productOverlay){
+    const productPages = productOverlay.querySelectorAll('.product-page');
+    function showProductPage(id){
+      productOverlay.style.display = 'block';
+      document.body.classList.add('scroll-locked');
+      productPages.forEach(p => {
+        const isMatch = p.id === id;
+        p.style.display = isMatch ? 'flex' : 'none';
+        p.classList.remove('active');
+        if(isMatch) p.scrollTop = 0;
+      });
+      const activePage = document.getElementById(id);
+      if(activePage){
+        requestAnimationFrame(() => requestAnimationFrame(() => { activePage.classList.add('active'); }));
+      }
+    }
+    function hideProductOverlay(){
+      productOverlay.style.display = 'none';
+      document.body.classList.remove('scroll-locked');
+    }
+    function handleProductHash(){
+      const hash = window.location.hash;
+      if(hash.startsWith('#product-')) showProductPage(hash.replace('#', ''));
+      else hideProductOverlay();
+    }
+    window.addEventListener('hashchange', handleProductHash);
+    handleProductHash();
+
+    document.querySelectorAll('a.product-card-link').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        window.location.hash = link.getAttribute('href').replace('#', '');
+      });
+    });
+    productOverlay.querySelectorAll('[data-close-product]').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        window.location.hash = '';
+      });
+    });
   }

@@ -519,11 +519,14 @@
     text-align:center;
   }
   .product-card:hover{ transform:translateY(-6px); box-shadow:0 14px 30px rgba(43,36,28,0.16); }
+  .product-card .colour-name{
+    color:var(--c);
+    margin:1rem 0 0.2rem;
+  }
   .product-card-name{
     font-family:'Shippori Mincho', serif;
     font-size:1.15rem;
     color:var(--ink);
-    order:1;
   }
   .product-card-scent{
     font-size:0.7rem;
@@ -531,18 +534,37 @@
     text-transform:uppercase;
     font-weight:700;
     color:var(--gold-deep);
-    margin:0.35rem 0 1rem;
-    order:2;
+    margin:0.35rem 0 0;
+  }
+  .product-card-link{
+    display:block;
+    text-decoration:none;
+    color:inherit;
   }
   .product-card-photo{
     position:relative;
     width:100%;
     height:200px;
     overflow:hidden;
-    background:var(--gold-light);
+    background:var(--c);
     border-radius:12px;
-    order:3;
   }
+  .product-card-photo::before,
+  .product-card-photo::after{
+    content:'';
+    position:absolute;
+    top:0; bottom:0;
+    width:16%;
+    background-image:repeating-linear-gradient(45deg, rgba(255,255,255,0.4) 0 2px, transparent 2px 9px);
+    opacity:0.55;
+  }
+  .product-card-photo::before{ left:0; }
+  .product-card-photo::after{ right:0; }
+  .product-card.is-light .product-card-photo{
+    border:1.5px solid var(--gold);
+    box-shadow:inset 0 0 0 1px rgba(43,36,28,0.06);
+  }
+  .product-card.is-light .colour-name{ color:#B7A46B; }
   .product-card-flower{
     width:100%; height:100%;
     display:block;
@@ -552,7 +574,6 @@
     gap:0.7rem;
     width:100%;
     margin-top:1.2rem;
-    order:4;
   }
   .btn-cart, .btn-buy{
     flex:1 1 0;
@@ -747,6 +768,22 @@
     .page-main{ flex-direction:column; text-align:center; padding-top:14vh; }
     .page-text{ text-align:center; }
     .page-line{ margin:1.6rem auto 0; }
+  }
+
+  /* ---------- PRODUCTS PAGE: single-product detail overlay (price + cart actions) ---------- */
+  .product-page-price{
+    margin-top:1.3rem;
+    font-family:'Shippori Mincho', serif;
+    font-size:1.9rem;
+  }
+  .product-page-actions{
+    display:flex;
+    gap:0.9rem;
+    margin-top:1.7rem;
+    max-width:380px;
+  }
+  @media (max-width:900px){
+    .product-page-actions{ margin-left:auto; margin-right:auto; }
   }
 
   /* ---------- FLOWER DETAIL PAGES (corner-flourish style) ---------- */
@@ -1478,7 +1515,8 @@
   .cart-item{
     display:flex;
     align-items:center;
-    gap:1.1rem;
+    flex-wrap:wrap;
+    gap:0.7rem 1.1rem;
     background:var(--paper);
     border-radius:14px;
     padding:0.9rem 1.2rem;
@@ -1490,7 +1528,7 @@
     flex-shrink:0;
     border:1px solid rgba(43,36,28,0.15);
   }
-  .cart-item-info{ flex:1 1 auto; }
+  .cart-item-info{ flex:1 1 140px; min-width:140px; }
   .cart-item-name{
     font-family:'Shippori Mincho', serif;
     font-size:1.05rem;
@@ -1503,10 +1541,41 @@
     color:var(--gold-deep);
     margin-top:0.2rem;
   }
-  .cart-item-qty{
+  .cart-item-price{
     font-size:0.85rem;
     color:var(--ink-soft);
-    margin-right:0.6rem;
+    margin-top:0.25rem;
+  }
+  .qty-stepper{
+    display:inline-flex;
+    align-items:center;
+    gap:0.4rem;
+    border:1.5px solid var(--gold);
+    border-radius:999px;
+    padding:0.2rem 0.3rem;
+    flex-shrink:0;
+  }
+  .qty-stepper button{
+    width:1.5rem; height:1.5rem;
+    border-radius:50%;
+    border:none;
+    background:none;
+    color:var(--gold-deep);
+    font-size:1rem;
+    line-height:1;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:background .2s ease;
+  }
+  .qty-stepper button:hover{ background:var(--gold-light); }
+  .qty-stepper span{
+    min-width:1.2rem;
+    text-align:center;
+    font-weight:700;
+    color:var(--ink);
+    font-size:0.85rem;
   }
   .cart-item-remove{
     background:none;
@@ -1525,10 +1594,15 @@
   .cart-item-remove:hover{ background:var(--gold-light); }
   .cart-summary{
     display:flex;
-    justify-content:space-between;
-    align-items:baseline;
+    flex-direction:column;
+    gap:0.6rem;
     border-top:1px solid rgba(43,36,28,0.15);
     padding-top:1.2rem;
+  }
+  .cart-summary-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
   }
   .cart-total-label{
     font-size:0.75rem;
@@ -1541,3 +1615,107 @@
     font-size:1.4rem;
     color:var(--gold-deep);
   }
+
+  /* ---------- CART DRAWER (Temu-style slide-in, on every page via the nav Cart link) ---------- */
+  .cart-drawer-backdrop{
+    position:fixed;
+    inset:0;
+    background:rgba(43,36,28,0.45);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .3s ease;
+    z-index:400;
+  }
+  .cart-drawer-backdrop.is-open{ opacity:1; pointer-events:auto; }
+
+  .cart-drawer{
+    position:fixed;
+    top:0; right:0;
+    height:100vh;
+    width:min(420px, 92vw);
+    background:var(--ivory);
+    box-shadow:-10px 0 40px rgba(43,36,28,0.25);
+    z-index:401;
+    display:flex;
+    flex-direction:column;
+    transform:translateX(100%);
+    transition:transform .35s cubic-bezier(.4,0,.2,1);
+  }
+  .cart-drawer.is-open{ transform:translateX(0); }
+
+  .cart-drawer-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:1.4rem 1.5rem;
+    border-bottom:1px solid var(--hair);
+    flex-shrink:0;
+  }
+  .cart-drawer-head h3{
+    font-family:'Shippori Mincho', serif;
+    font-size:1.25rem;
+    color:var(--ink);
+    margin:0;
+  }
+  .cart-drawer-close{
+    background:none;
+    border:none;
+    font-size:1.5rem;
+    line-height:1;
+    color:var(--ink-soft);
+    cursor:pointer;
+    padding:0.2rem 0.5rem;
+    border-radius:6px;
+    transition:background .2s ease, color .2s ease;
+  }
+  .cart-drawer-close:hover{ background:rgba(43,36,28,0.07); color:var(--gold-deep); }
+
+  .cart-drawer-list{
+    list-style:none;
+    margin:0;
+    padding:1rem 1.3rem;
+    display:flex;
+    flex-direction:column;
+    gap:0.9rem;
+    overflow-y:auto;
+    flex:1 1 auto;
+  }
+  .cart-drawer-list[hidden]{ display:none; }
+  .cart-drawer-list .cart-item{ padding:0.7rem 0.8rem; }
+  .cart-drawer-empty{
+    flex:1 1 auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--ink-soft);
+    font-style:italic;
+    padding:2rem;
+    margin:0;
+  }
+  .cart-drawer-empty[hidden]{ display:none; }
+
+  .cart-drawer-foot{
+    border-top:1px solid var(--hair);
+    padding:1.2rem 1.5rem 1.5rem;
+    flex-shrink:0;
+  }
+  .cart-drawer-subtotal{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    font-size:0.95rem;
+    color:var(--ink);
+    margin-bottom:1rem;
+  }
+  .cart-drawer-subtotal-value{
+    font-family:'Shippori Mincho', serif;
+    color:var(--gold-deep);
+    font-size:1.2rem;
+  }
+  .cart-drawer-checkout{
+    display:block;
+    text-align:center;
+    text-decoration:none;
+  }
+
+  body.cart-drawer-open{ overflow:hidden; }
