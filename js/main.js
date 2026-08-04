@@ -724,6 +724,63 @@
     }
   }
 
+  // ----- Contact page: no backend, so submitting just confirms in place
+  // and keeps a copy in localStorage in case it's ever worth wiring to a
+  // real inbox later (same pattern as reviews' shared-store hook). -----
+  const contactForm = document.getElementById('contactForm');
+  if(contactForm){
+    contactForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const name = document.getElementById('contactName').value.trim();
+      const email = document.getElementById('contactEmail').value.trim();
+      const message = document.getElementById('contactMessage').value.trim();
+      const feedback = document.getElementById('contactFeedback');
+      if(!name || !email || !message){
+        feedback.textContent = 'Please fill in every field before sending.';
+        return;
+      }
+      try{
+        const key = 'bb_contact_messages';
+        const list = JSON.parse(localStorage.getItem(key) || '[]');
+        list.push({ name, email, message, date:new Date().toISOString() });
+        localStorage.setItem(key, JSON.stringify(list));
+      }catch(err){}
+      contactForm.reset();
+      feedback.textContent = 'Thank you, ' + name.split(' ')[0] + ' — we\'ll get back to you soon.';
+    });
+  }
+
+  // ----- Home page: small "what customers say" preview, reading the same
+  // review list the Reviews page uses (falls back to a couple of curated
+  // lines if nothing has been saved to this browser yet). -----
+  const homePreview = document.getElementById('homeReviewsPreview');
+  if(homePreview){
+    const fallback = [
+      { name:'Amara O.', rating:5, text:"The Champagne Fan box was even more stunning in person - felt like unwrapping a piece of jewellery." },
+      { name:'Priya K.', rating:5, text:'Ordered the Sakura Fan for a birthday and it arrived perfectly wrapped. The gold box made it feel extra special.' },
+      { name:'Daniel R.', rating:4, text:'Beautiful craftsmanship and fast delivery. Wish there were a couple more size options, but the quality made up for it.' }
+    ];
+    let list = fallback;
+    try{
+      const raw = localStorage.getItem('bb_reviews_v2');
+      if(raw){
+        const parsed = JSON.parse(raw);
+        if(Array.isArray(parsed) && parsed.length) list = parsed;
+      }
+    }catch(e){}
+    const top = list.filter(r => !r.reported).slice().sort((a, b) => b.rating - a.rating).slice(0, 3);
+    const escape = str => { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; };
+    homePreview.innerHTML = top.map(r => {
+      const filled = '★'.repeat(r.rating);
+      const empty = '<span class="star-empty">' + '★'.repeat(5 - r.rating) + '</span>';
+      return '<div class="reviews-teaser-card">'
+        + '<div class="reviews-teaser-stars">' + filled + empty + '</div>'
+        + '<p class="reviews-teaser-text">“' + escape(r.text) + '”</p>'
+        + '<div class="reviews-teaser-name">' + escape(r.name) + '</div>'
+        + '</div>';
+    }).join('');
+  }
+
   const wrap = document.getElementById('heroPetals');
   const petalsPerSpawn = 34;
   for(let i=0; wrap && i<petalsPerSpawn; i++){
@@ -784,7 +841,7 @@
     window.bbAccount = { getCurrentAccountId, cartKeyFor: id => id ? 'bb_cart_' + id : 'bb_cart' };
 
     // ----- nav: "Sign In" (logged out) or "Hi, <nickname>  Log out" (logged
-    // in), inserted just before the Cart link on whichever page is open -----
+    // in), inserted just after the Cart link on whichever page is open -----
     const navLinks = document.getElementById('navLinks');
     let navAccount = null;
     if(navLinks){
@@ -792,7 +849,7 @@
       navAccount = document.createElement('li');
       navAccount.id = 'navAccount';
       navAccount.className = 'nav-account';
-      if(cartLi) navLinks.insertBefore(navAccount, cartLi);
+      if(cartLi) cartLi.after(navAccount);
       else navLinks.appendChild(navAccount);
     }
     function renderAccountNav(){

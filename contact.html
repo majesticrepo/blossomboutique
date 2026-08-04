@@ -42,12 +42,113 @@
   </div>
 </nav>
 
-<section class="about" id="contact-section" style="padding-top:20vh; min-height:100vh;">
-  <div class="about-mark">便</div>
-  <div class="about-text">
-    <span class="section-eyebrow">Contacts</span>
-    <h2 class="section-title">Get in <em>touch</em></h2>
-    <p>Contact details coming soon.</p>
+<section class="about" id="contact-section" style="padding-top:20vh;">
+  <div class="about-hero">
+    <div class="about-mark">便</div>
+    <div class="about-text">
+      <span class="section-eyebrow">Contacts</span>
+      <h2 class="section-title">Get in <em>touch</em></h2>
+      <p>Question about an order, a custom colour, or just want to say hello? We read everything ourselves — no call centre, no bots.</p>
+    </div>
+  </div>
+
+  <!-- Placeholder contact details — swap these for the real ones before launch -->
+  <div class="contact-grid">
+    <div class="contact-card">
+      <div class="feature-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="6" y="12" width="36" height="24" rx="2"/>
+        <path d="M6 14 L24 28 L42 14"/>
+      </svg></div>
+      <h3>Email</h3>
+      <p><a href="mailto:hello@blossomboutique.com">hello@blossomboutique.com</a><br>We reply within 1–2 business days.</p>
+    </div>
+    <div class="contact-card">
+      <div class="feature-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="15" y="5" width="18" height="38" rx="4"/>
+        <line x1="15" y1="34" x2="33" y2="34"/>
+        <circle cx="24" cy="39" r="1.4" fill="currentColor" stroke="none"/>
+      </svg></div>
+      <h3>Phone</h3>
+      <p><a href="tel:+15550192847">+1 (555) 019-2847</a><br>Mon–Fri, 9am–6pm PT</p>
+    </div>
+    <div class="contact-card">
+      <div class="feature-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M24 44 C24 44 38 30 38 19 C38 11 32 5 24 5 C16 5 10 11 10 19 C10 30 24 44 24 44Z"/>
+        <circle cx="24" cy="19" r="6"/>
+      </svg></div>
+      <h3>Studio</h3>
+      <p>Los Angeles, CA<br>By appointment — we ship worldwide.</p>
+    </div>
+  </div>
+
+  <div class="contact-form-wrap">
+    <h3 class="contact-form-title">Send us a message</h3>
+    <form id="contactForm" novalidate>
+      <div class="contact-field">
+        <span>Your name</span>
+        <input type="text" id="contactName" name="name" placeholder="Jane Smith" required>
+      </div>
+      <div class="contact-field">
+        <span>Your email</span>
+        <input type="email" id="contactEmail" name="email" placeholder="jane@example.com" required>
+      </div>
+      <div class="contact-field">
+        <span>Message</span>
+        <textarea id="contactMessage" name="message" rows="5" placeholder="How can we help?" required></textarea>
+      </div>
+      <button type="submit" class="contact-submit">Send Message</button>
+      <p class="contact-feedback" id="contactFeedback" aria-live="polite"></p>
+    </form>
+  </div>
+
+  <div class="contact-social">
+    <a href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="7" y="7" width="34" height="34" rx="9"/>
+        <circle cx="24" cy="24" r="9"/>
+        <circle cx="34" cy="14" r="1.6" fill="currentColor" stroke="none"/>
+      </svg>
+      Instagram
+    </a>
+    <a href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M24 44 C24 44 38 30 38 19 C38 11 32 5 24 5 C16 5 10 11 10 19 C10 30 24 44 24 44Z"/>
+        <circle cx="24" cy="19" r="6"/>
+      </svg>
+      Pinterest
+    </a>
+    <a href="mailto:hello@blossomboutique.com">
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="6" y="12" width="36" height="24" rx="2"/>
+        <path d="M6 14 L24 28 L42 14"/>
+      </svg>
+      Email Us
+    </a>
+  </div>
+</section>
+
+<section class="about" style="padding-top:2vh;">
+  <div class="section-head">
+    <span class="section-eyebrow">Before You Write In</span>
+    <h2 class="section-title">A few quick <em>answers</em></h2>
+  </div>
+  <div class="contact-faq">
+    <details class="faq-item">
+      <summary>How long does shipping take?</summary>
+      <p>Most orders leave our studio within 3–5 business days, then arrive within a week domestically or two to three weeks internationally, depending on customs.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Do you make custom colours?</summary>
+      <p>Sometimes! Email us with what you have in mind — if it's within reach of our current silk stock, we'll let you know a timeline and price.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Can I return or exchange a fan?</summary>
+      <p>Yes, within 14 days of delivery, as long as it hasn't been used. Reach out to hello@blossomboutique.com and we'll walk you through it.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Do you ship internationally?</summary>
+      <p>We do, worldwide. Duties and import taxes are set by your local customs office and aren't included at checkout.</p>
+    </details>
   </div>
 </section>
 
