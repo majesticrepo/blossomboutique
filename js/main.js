@@ -1038,6 +1038,21 @@
     saveOrders(orders);
   }
 
+  // ----- Saved address: same account scoping as the cart/orders (guests
+  // included), so checking "Save this address" at checkout pre-fills the
+  // Contact + Delivery Address blocks next time, without needing a backend. -----
+  function ADDRESS_KEY_FN(){
+    const id = window.bbAccount ? window.bbAccount.getCurrentAccountId() : null;
+    return id ? 'bb_address_' + id : 'bb_address';
+  }
+  function getSavedAddress(){
+    try{ return JSON.parse(localStorage.getItem(ADDRESS_KEY_FN())) || null; }
+    catch(e){ return null; }
+  }
+  function saveAddress(address){
+    try{ localStorage.setItem(ADDRESS_KEY_FN(), JSON.stringify(address)); }catch(e){}
+  }
+
   function updateCartBadge(){
     const count = cartCount(getCart());
     document.querySelectorAll('#cartCount, .cart-count').forEach(badge => {
@@ -1411,6 +1426,26 @@
     fulfilRadios.forEach(r => r.addEventListener('change', updateFulfilmentView));
     updateFulfilmentView();
 
+    // ----- Saved address: pre-fill Contact + Delivery Address from whatever
+    // was saved on a previous order (scoped to whoever's signed in, or this
+    // browser as a guest - same pattern as the cart/orders above). -----
+    const saveAddressCheckbox = document.getElementById('ckSaveAddress');
+    const savedAddress = getSavedAddress();
+    if(savedAddress){
+      const fillIfEmpty = (id, value) => {
+        const el = document.getElementById(id);
+        if(el && value && !el.value) el.value = value;
+      };
+      fillIfEmpty('ckName', savedAddress.name);
+      fillIfEmpty('ckPhone', savedAddress.phone);
+      fillIfEmpty('ckAddress1', savedAddress.line1);
+      fillIfEmpty('ckAddress2', savedAddress.line2);
+      fillIfEmpty('ckCity', savedAddress.city);
+      fillIfEmpty('ckState', savedAddress.state);
+      fillIfEmpty('ckZip', savedAddress.zip);
+      fillIfEmpty('ckCountry', savedAddress.country);
+    }
+
     // ----- light input formatting: card number spacing + expiry slash -----
     const cardNumberInput = document.getElementById('ckCardNumber');
     cardNumberInput.addEventListener('input', () => {
@@ -1432,6 +1467,37 @@
       return valid;
     }
 
+    // ----- Card number check-digit (Luhn algorithm) - the same pass/fail
+    // math every real card issuer's number satisfies, so it catches
+    // obviously made-up numbers (e.g. "1234567812345678") without needing a
+    // real payment processor. -----
+    function passesLuhnCheck(digits){
+      let sum = 0;
+      let double = false;
+      for(let i = digits.length - 1; i >= 0; i--){
+        let n = digits.charCodeAt(i) - 48;
+        if(double){
+          n *= 2;
+          if(n > 9) n -= 9;
+        }
+        sum += n;
+        double = !double;
+      }
+      return sum % 10 === 0;
+    }
+
+    // ----- Expiry check: MM must be a real month, and the card must not
+    // already be expired - valid through the last day of its printed month. -----
+    function isExpiryValid(value){
+      const match = /^(\d{2})\/(\d{2})$/.exec(value.trim());
+      if(!match) return false;
+      const month = parseInt(match[1], 10);
+      if(month < 1 || month > 12) return false;
+      const year = 2000 + parseInt(match[2], 10);
+      const firstOfNextMonth = new Date(year, month, 1);
+      return firstOfNextMonth > new Date();
+    }
+
     checkoutForm.addEventListener('submit', e => {
       e.preventDefault();
       if(getCart().length === 0) return;
@@ -1449,29 +1515,55 @@
       const zip = document.getElementById('ckZip');
       const country = document.getElementById('ckCountry');
 
-      let ok = true;
-      ok = markField(name, name.value.trim().length > 0) && ok;
-      ok = markField(phone, phone.value.trim().length > 0) && ok;
+      let requiredOk = true;
+      requiredOk = markField(name, name.value.trim().length > 0) && requiredOk;
+      requiredOk = markField(phone, phone.value.trim().length > 0) && requiredOk;
       if(!isPickup){
-        ok = markField(address1, address1.value.trim().length > 0) && ok;
-        ok = markField(city, city.value.trim().length > 0) && ok;
-        ok = markField(state, state.value.trim().length > 0) && ok;
-        ok = markField(zip, zip.value.trim().length > 0) && ok;
-        ok = markField(country, country.value.trim().length > 0) && ok;
+        requiredOk = markField(address1, address1.value.trim().length > 0) && requiredOk;
+        requiredOk = markField(city, city.value.trim().length > 0) && requiredOk;
+        requiredOk = markField(state, state.value.trim().length > 0) && requiredOk;
+        requiredOk = markField(zip, zip.value.trim().length > 0) && requiredOk;
+        requiredOk = markField(country, country.value.trim().length > 0) && requiredOk;
       } else {
         [address1, city, state, zip, country].forEach(f => f.classList.remove('is-invalid'));
       }
-      ok = markField(cardName, cardName.value.trim().length > 0) && ok;
-      ok = markField(cardNumber, cardNumber.value.replace(/\s/g, '').length >= 13) && ok;
-      ok = markField(cardExpiry, /^\d{2}\/\d{2}$/.test(cardExpiry.value.trim())) && ok;
-      ok = markField(cardCvv, cardCvv.value.trim().length >= 3) && ok;
 
-      if(!ok){
-        checkoutFeedback.textContent = 'Please fill in every field so we can complete your order.';
+      const cardDigits = cardNumber.value.replace(/\s/g, '');
+      const cardNumberValid = cardDigits.length >= 13 && cardDigits.length <= 19 && passesLuhnCheck(cardDigits);
+      let paymentOk = true;
+      paymentOk = markField(cardName, cardName.value.trim().length > 0) && paymentOk;
+      paymentOk = markField(cardNumber, cardNumberValid) && paymentOk;
+      paymentOk = markField(cardExpiry, isExpiryValid(cardExpiry.value)) && paymentOk;
+      paymentOk = markField(cardCvv, /^\d{3,4}$/.test(cardCvv.value.trim())) && paymentOk;
+
+      if(!requiredOk || !paymentOk){
+        if(!paymentOk && requiredOk){
+          checkoutFeedback.textContent = 'That card doesn’t look right — double-check the number, expiry date, and CVV.';
+        } else if(!requiredOk && paymentOk){
+          checkoutFeedback.textContent = 'Please fill in every field so we can complete your order.';
+        } else {
+          checkoutFeedback.textContent = 'Please fill in every field, including a valid card, so we can complete your order.';
+        }
         return;
       }
 
       checkoutFeedback.textContent = '';
+
+      // ----- Save this address (scoped the same way as the cart/orders)
+      // so it's ready to pre-fill next time, if the shopper opted in. -----
+      if(!isPickup && saveAddressCheckbox && saveAddressCheckbox.checked){
+        saveAddress({
+          name: name.value.trim(),
+          phone: phone.value.trim(),
+          line1: address1.value.trim(),
+          line2: document.getElementById('ckAddress2').value.trim(),
+          city: city.value.trim(),
+          state: state.value.trim(),
+          zip: zip.value.trim(),
+          country: country.value.trim(),
+        });
+      }
+
       const last4 = cardNumber.value.replace(/\s/g, '').slice(-4);
       checkoutSuccessMsg.textContent = isPickup
         ? 'Thanks, ' + name.value.trim() + ' - we will text ' + phone.value.trim() + ' when your order is ready to collect in-store. Paid with card ending ' + last4 + '.'

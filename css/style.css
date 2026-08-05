@@ -2128,6 +2128,16 @@
   @media (max-width:520px){
     .checkout-field-row{ grid-template-columns:1fr; }
   }
+  .checkout-save-address{
+    display:flex;
+    align-items:center;
+    gap:0.6rem;
+    margin-top:0.4rem;
+    font-size:0.86rem;
+    color:var(--ink-soft);
+    cursor:pointer;
+  }
+  .checkout-save-address input{ accent-color:var(--gold-deep); width:16px; height:16px; }
 
   .fulfil-toggle{
     display:flex;
