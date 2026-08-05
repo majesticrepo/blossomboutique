@@ -911,9 +911,9 @@
             '<span id="accountIdentifierLabel">Email address</span>' +
             '<input type="email" id="accountIdentifier" autocomplete="email" required>' +
           '</label>' +
-          '<label class="account-field">' +
+          '<label class="account-field" id="accountNicknameField">' +
             '<span>Nickname</span>' +
-            '<input type="text" id="accountNickname" placeholder="Only needed the first time" autocomplete="nickname">' +
+            '<input type="text" id="accountNickname" placeholder="Pick a nickname" autocomplete="nickname">' +
           '</label>' +
           '<p class="account-modal-error" id="accountModalError" hidden></p>' +
           '<button type="submit" class="account-submit-btn">Sign In</button>' +
@@ -924,18 +924,26 @@
     const modeBtns = modal.querySelectorAll('.account-mode-btn');
     const titleEl = modal.querySelector('#accountModalTitle');
     const submitBtn = modal.querySelector('.account-submit-btn');
+    const nicknameField = modal.querySelector('#accountNicknameField');
     const MODE_TITLES = { signin: 'Sign in to your account', login: 'Log in to your account' };
     const MODE_SUBMIT_LABELS = { signin: 'Sign In', login: 'Log In' };
+    let currentMode = 'signin';
     modeBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        const mode = btn.dataset.mode;
+        currentMode = btn.dataset.mode;
         modeBtns.forEach(b => {
           const isActive = b === btn;
           b.classList.toggle('is-active', isActive);
           b.setAttribute('aria-selected', String(isActive));
         });
-        titleEl.textContent = MODE_TITLES[mode];
-        submitBtn.textContent = MODE_SUBMIT_LABELS[mode];
+        titleEl.textContent = MODE_TITLES[currentMode];
+        submitBtn.textContent = MODE_SUBMIT_LABELS[currentMode];
+        // Log In is for returning customers only - they already picked a
+        // nickname when they signed up, so there's nothing to ask here.
+        // (.account-field has its own `display:block`, which beats the
+        // UA [hidden] stylesheet rule, so set display directly instead.)
+        nicknameField.style.display = currentMode === 'login' ? 'none' : '';
+        errorEl.hidden = true;
       });
     });
 
@@ -990,6 +998,11 @@
       const accountId = currentMethod + ':' + identifier.toLowerCase();
       const accounts = getAccounts();
       const existing = accounts[accountId];
+
+      if(!existing && currentMode === 'login'){
+        showError('We couldn’t find an account for that ' + METHOD_LABELS[currentMethod].toLowerCase() + ' — switch to Sign In to create one.');
+        return;
+      }
 
       if(!existing && !nickname){
         showError('Pick a nickname to finish signing up — you won’t need it again after that.');
