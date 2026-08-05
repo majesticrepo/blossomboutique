@@ -49,7 +49,12 @@
     <h2 class="section-title">Your <em>Cart</em></h2>
   </div>
 
-  <div class="cart-wrap" id="cartWrap">
+  <div class="cart-tabs" role="tablist" aria-label="Cart and order history">
+    <button type="button" class="cart-tab is-active" id="cartTabBtn" role="tab" aria-selected="true" aria-controls="cartWrap">Cart</button>
+    <button type="button" class="cart-tab" id="ordersTabBtn" role="tab" aria-selected="false" aria-controls="ordersWrap">My Orders</button>
+  </div>
+
+  <div class="cart-wrap" id="cartWrap" role="tabpanel" aria-labelledby="cartTabBtn">
     <p class="cart-empty" id="cartEmpty">Your cart is empty. <a href="products.html">Browse the collection &rarr;</a></p>
     <ul class="cart-list" id="cartList" hidden></ul>
     <div class="cart-summary" id="cartSummary" hidden>
@@ -63,6 +68,11 @@
       </div>
       <a class="review-submit cart-checkout-btn" href="checkout.html">Pay / Buy Now</a>
     </div>
+  </div>
+
+  <div class="orders-wrap" id="ordersWrap" role="tabpanel" aria-labelledby="ordersTabBtn" hidden>
+    <p class="orders-empty" id="ordersEmpty">No orders yet. <a href="products.html">Start shopping &rarr;</a></p>
+    <ul class="orders-list" id="ordersList" hidden></ul>
   </div>
 
 </section>
