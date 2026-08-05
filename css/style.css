@@ -481,7 +481,7 @@
     display:flex;
     justify-content:space-between;
     max-width:1300px;
-    margin:0 auto 5rem;
+    margin:0 auto 2.6rem;
     padding:0 0.5rem;
   }
   .colour-dot-row .flower-item{ padding:0; flex:0 1 auto; }
@@ -491,6 +491,80 @@
   }
   @media (max-width:500px){
     .colour-dot-row .swatch{ width:34px; height:34px; }
+  }
+
+  /* ---------- PRODUCTS PAGE: FANS / BOOKMARKS / BRACELETS category tabs,
+     sitting under the colour-dot row. Fans is the only category with real
+     stock right now; the others switch to a short "coming soon" panel. ---------- */
+  .category-tab-row{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:1.1rem;
+    margin:0 auto 5rem;
+  }
+  .category-tab{
+    padding:0.3rem 0;
+    border:none;
+    background:none;
+    cursor:pointer;
+    font-family:'Quicksand', sans-serif;
+    font-weight:700;
+    font-size:0.85rem;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    transition:color .25s ease;
+  }
+  .category-tab:hover{ color:var(--gold-deep); }
+  .category-tab.is-active{
+    color:var(--gold-deep);
+    text-decoration:underline;
+    text-underline-offset:0.35em;
+    text-decoration-thickness:1.5px;
+  }
+  .category-tab-divider{
+    color:var(--hair);
+    font-size:0.9rem;
+  }
+  @media (max-width:500px){
+    .category-tab-row{ gap:0.7rem; }
+    .category-tab{ font-size:0.7rem; letter-spacing:0.14em; }
+  }
+
+  .category-coming-soon{
+    max-width:520px;
+    margin:0 auto 3rem;
+    padding:3.5rem 2rem;
+    text-align:center;
+    background:var(--ivory);
+    border:1px solid var(--hair);
+    border-radius:16px;
+  }
+  .category-coming-soon .about-mark{
+    font-family:'Shippori Mincho', serif;
+    font-size:3rem;
+    color:var(--gold-light);
+    line-height:1;
+    margin-bottom:1rem;
+  }
+  .category-coming-soon h3{
+    font-family:'Shippori Mincho', serif;
+    font-weight:600;
+    font-size:1.3rem;
+    margin:0 0 0.8rem;
+    color:var(--ink);
+  }
+  .category-coming-soon p{
+    font-size:0.95rem;
+    line-height:1.8;
+    color:var(--ink-soft);
+    margin:0 0 1.6rem;
+  }
+  .category-coming-soon .btn-buy{
+    display:inline-block;
+    flex:none;
+    text-decoration:none;
   }
 
   .product-grid{

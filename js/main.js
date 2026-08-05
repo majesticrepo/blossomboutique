@@ -1583,4 +1583,21 @@
         });
       });
     }
+
+    // ----- FANS / BOOKMARKS / BRACELETS category tabs: swap which panel
+    // shows under the colour-dot row. Only Fans has real stock today; the
+    // others switch to a short "coming soon" panel instead of the grid. -----
+    const categoryTabs = document.querySelectorAll('.category-tab-row .category-tab');
+    if(categoryTabs.length){
+      const panels = document.querySelectorAll('[data-category-panel]');
+      categoryTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const category = tab.dataset.category;
+          categoryTabs.forEach(t => t.classList.toggle('is-active', t === tab));
+          panels.forEach(panel => {
+            panel.hidden = panel.dataset.categoryPanel !== category;
+          });
+        });
+      });
+    }
   }
