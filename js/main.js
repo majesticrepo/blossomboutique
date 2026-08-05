@@ -413,7 +413,7 @@
           + '</div>'
           + '</div>'
           + '<div class="review-card-head">'
-          + '<span class="review-card-name">' + escapeHtml(r.name) + reportedTag + '</span>'
+          + '<span class="review-card-name' + (isOwner ? ' is-own' : '') + '"' + (isOwner ? ' title="Right-click to edit your name"' : '') + '>' + escapeHtml(r.name) + reportedTag + '</span>'
           + '<span class="review-card-date">' + formatDate(r.date) + editedTag + '</span>'
           + '</div>'
           + '<div class="review-card-stars">' + filled + empty + '</div>'
@@ -602,6 +602,22 @@
     });
     document.addEventListener('click', e => {
       if(!e.target.closest('.review-menu')) closeAllMenus();
+    });
+
+    // ----- right-click your own name on a review card to jump straight
+    // into edit mode, with the name field ready to change -----
+    reviewList.addEventListener('contextmenu', e => {
+      const nameEl = e.target.closest('.review-card-name.is-own');
+      if(!nameEl) return;
+      const id = nameEl.closest('.review-card').dataset.id;
+      const review = reviews.find(r => r.id === id);
+      if(!review || review.authorId !== authorId) return; // only your own reviews
+      e.preventDefault();
+      closeAllMenus();
+      enterEditMode(review);
+      const nameInput = document.getElementById('reviewName');
+      nameInput.focus();
+      nameInput.select();
     });
 
     // ----- report modal: pick a reason before a review gets flagged -----

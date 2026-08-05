@@ -1430,6 +1430,13 @@
     font-size:1.05rem;
     color:var(--ink);
   }
+  .review-card-name.is-own{
+    cursor:context-menu;
+    border-bottom:1px dashed transparent;
+  }
+  .review-card-name.is-own:hover{
+    border-bottom-color:var(--ink-soft);
+  }
   .review-card-date{
     font-size:0.75rem;
     letter-spacing:0.06em;
