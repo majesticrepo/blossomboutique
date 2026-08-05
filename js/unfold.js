@@ -30,6 +30,39 @@
   let shownProgress = 0;
   const EASE = 0.12;
 
+  // Seeking a video is asynchronous - the browser has to find the nearest
+  // keyframe and decode forward to the exact time. If we fire a new
+  // video.currentTime on every animation frame without waiting for the
+  // previous seek to land, requests pile up faster than the browser can
+  // service them and the video visibly falls behind / stutters while it
+  // "catches up". So we only ever have one seek in flight: further targets
+  // are remembered and applied the moment the in-flight one finishes.
+  let seeking = false;
+  let seekPending = false;
+  let seekWatchdog = null;
+
+  function requestSeek(target){
+    if(Math.abs(video.currentTime - target) < 0.004) return;
+    if(seeking){ seekPending = true; return; }
+    seeking = true;
+    seekPending = false;
+    try{ video.currentTime = target; }catch(e){ seeking = false; return; }
+    clearTimeout(seekWatchdog);
+    // Safety net: some browsers can skip firing 'seeked' for a no-op or
+    // interrupted seek. Don't let that permanently wedge future seeks.
+    seekWatchdog = setTimeout(() => { seeking = false; }, 300);
+  }
+
+  video.addEventListener('seeked', () => {
+    seeking = false;
+    clearTimeout(seekWatchdog);
+    if(seekPending){
+      seekPending = false;
+      const duration = video.duration;
+      if(duration > 0 && !isNaN(duration)) requestSeek(shownProgress * duration);
+    }
+  });
+
   function setCaption(progress, direction){
     if(progress <= 0.02){
       captionEyebrow.textContent = 'Scroll down';
@@ -62,10 +95,7 @@
 
     const duration = video.duration;
     if(duration > 0 && !isNaN(duration)){
-      const target = shownProgress * duration;
-      if(Math.abs(video.currentTime - target) > 0.004){
-        try{ video.currentTime = target; }catch(e){}
-      }
+      requestSeek(shownProgress * duration);
     }
 
     progressFill.style.width = (shownProgress * 100) + '%';
