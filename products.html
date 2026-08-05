@@ -14,22 +14,16 @@
   <defs>
 
     <symbol id="cartoonFan" viewBox="0 0 200 200">
-      <g stroke="#2B241C" stroke-width="3" stroke-linejoin="round">
-        <ellipse cx="100" cy="95" rx="13" ry="90" fill="var(--c)" transform="rotate(-80 100 185)"/>
-        <ellipse cx="100" cy="95" rx="13" ry="90" fill="color-mix(in srgb, var(--c) 65%, white)" transform="rotate(-60 100 185)"/>
-        <ellipse cx="100" cy="95" rx="13" ry="90" fill="var(--c)" transform="rotate(-40 100 185)"/>
-        <ellipse cx="100" cy="95" rx="13" ry="90" fill="color-mix(in srgb, var(--c) 65%, white)" transform="rotate(-20 100 185)"/>
-        <ellipse cx="100" cy="95" rx="13" ry="90" fill="var(--c)" transform="rotate(0 100 185)"/>
-        <ellipse cx="100" cy="95" rx="13" ry="90" fill="color-mix(in srgb, var(--c) 65%, white)" transform="rotate(20 100 185)"/>
-        <ellipse cx="100" cy="95" rx="13" ry="90" fill="var(--c)" transform="rotate(40 100 185)"/>
-        <ellipse cx="100" cy="95" rx="13" ry="90" fill="color-mix(in srgb, var(--c) 65%, white)" transform="rotate(60 100 185)"/>
-        <ellipse cx="100" cy="95" rx="13" ry="90" fill="var(--c)" transform="rotate(80 100 185)"/>
+      <g fill="var(--c)" stroke="#2B241C" stroke-width="2" stroke-linejoin="round">
+        <ellipse cx="100" cy="95" rx="14" ry="90" transform="rotate(-75 100 185)"/>
+        <ellipse cx="100" cy="95" rx="14" ry="90" transform="rotate(-50 100 185)"/>
+        <ellipse cx="100" cy="95" rx="14" ry="90" transform="rotate(-25 100 185)"/>
+        <ellipse cx="100" cy="95" rx="14" ry="90" transform="rotate(0 100 185)"/>
+        <ellipse cx="100" cy="95" rx="14" ry="90" transform="rotate(25 100 185)"/>
+        <ellipse cx="100" cy="95" rx="14" ry="90" transform="rotate(50 100 185)"/>
+        <ellipse cx="100" cy="95" rx="14" ry="90" transform="rotate(75 100 185)"/>
       </g>
-      <g stroke="#2B241C" stroke-width="3.5" stroke-linecap="round">
-        <line x1="100" y1="185" x2="82" y2="197"/>
-        <line x1="100" y1="185" x2="118" y2="197"/>
-      </g>
-      <circle cx="100" cy="185" r="11" fill="#E3B34A" stroke="#2B241C" stroke-width="3"/>
+      <circle cx="100" cy="185" r="10" fill="#E3B34A" stroke="#2B241C" stroke-width="2"/>
     </symbol>
 
     <!-- Realistic open hand-fan: silk panel tinted per colour via var(--c),
@@ -676,6 +670,15 @@
     <a class="flower-item c-gold" href="index.html#page-gold" title="Champagne Fan"><div class="swatch"></div><div class="colour-name">Gold</div></a>
   </div>
 
+  <nav class="category-tab-row" aria-label="Shop by category">
+    <button type="button" class="category-tab is-active" data-category="fans">Fans</button>
+    <span class="category-tab-divider" aria-hidden="true">|</span>
+    <button type="button" class="category-tab" data-category="bookmarks">Bookmarks</button>
+    <span class="category-tab-divider" aria-hidden="true">|</span>
+    <button type="button" class="category-tab" data-category="bracelets">Bracelets</button>
+  </nav>
+
+  <div class="category-panel" id="category-fans" data-category-panel="fans">
   <div class="product-grid">
     <div class="product-card" style="--c:#C0392B;">
       <a class="product-card-link bloom-link" href="#product-red" data-colour-hex="#C0392B">
@@ -821,6 +824,21 @@
         <button class="btn-buy" data-product="Champagne Fan" data-colour="Gold" data-scent="Peony" data-price="12.54">Buy Now</button>
       </div>
     </div>
+  </div>
+  </div>
+
+  <div class="category-panel category-coming-soon" id="category-bookmarks" data-category-panel="bookmarks" hidden>
+    <div class="about-mark">栞</div>
+    <h3>Bookmarks are on the way</h3>
+    <p>We're pleating our first run of silk bookmarks in the same signature colours as the fans. Want a nudge the day they land?</p>
+    <a class="btn-buy" href="contact.html">Get in touch</a>
+  </div>
+
+  <div class="category-panel category-coming-soon" id="category-bracelets" data-category-panel="bracelets" hidden>
+    <div class="about-mark">結</div>
+    <h3>Bracelets are on the way</h3>
+    <p>A woven silk-cord bracelet for every fan colour is next on the bench. Want a nudge the day they land?</p>
+    <a class="btn-buy" href="contact.html">Get in touch</a>
   </div>
 
 </section>

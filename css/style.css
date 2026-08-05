@@ -481,7 +481,7 @@
     display:flex;
     justify-content:space-between;
     max-width:1300px;
-    margin:0 auto 5rem;
+    margin:0 auto 2.6rem;
     padding:0 0.5rem;
   }
   .colour-dot-row .flower-item{ padding:0; flex:0 1 auto; }
@@ -491,6 +491,80 @@
   }
   @media (max-width:500px){
     .colour-dot-row .swatch{ width:34px; height:34px; }
+  }
+
+  /* ---------- PRODUCTS PAGE: FANS / BOOKMARKS / BRACELETS category tabs,
+     sitting under the colour-dot row. Fans is the only category with real
+     stock right now; the others switch to a short "coming soon" panel. ---------- */
+  .category-tab-row{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:1.1rem;
+    margin:0 auto 5rem;
+  }
+  .category-tab{
+    padding:0.3rem 0;
+    border:none;
+    background:none;
+    cursor:pointer;
+    font-family:'Quicksand', sans-serif;
+    font-weight:700;
+    font-size:0.85rem;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    transition:color .25s ease;
+  }
+  .category-tab:hover{ color:var(--gold-deep); }
+  .category-tab.is-active{
+    color:var(--gold-deep);
+    text-decoration:underline;
+    text-underline-offset:0.35em;
+    text-decoration-thickness:1.5px;
+  }
+  .category-tab-divider{
+    color:var(--hair);
+    font-size:0.9rem;
+  }
+  @media (max-width:500px){
+    .category-tab-row{ gap:0.7rem; }
+    .category-tab{ font-size:0.7rem; letter-spacing:0.14em; }
+  }
+
+  .category-coming-soon{
+    max-width:520px;
+    margin:0 auto 3rem;
+    padding:3.5rem 2rem;
+    text-align:center;
+    background:var(--ivory);
+    border:1px solid var(--hair);
+    border-radius:16px;
+  }
+  .category-coming-soon .about-mark{
+    font-family:'Shippori Mincho', serif;
+    font-size:3rem;
+    color:var(--gold-light);
+    line-height:1;
+    margin-bottom:1rem;
+  }
+  .category-coming-soon h3{
+    font-family:'Shippori Mincho', serif;
+    font-weight:600;
+    font-size:1.3rem;
+    margin:0 0 0.8rem;
+    color:var(--ink);
+  }
+  .category-coming-soon p{
+    font-size:0.95rem;
+    line-height:1.8;
+    color:var(--ink-soft);
+    margin:0 0 1.6rem;
+  }
+  .category-coming-soon .btn-buy{
+    display:inline-block;
+    flex:none;
+    text-decoration:none;
   }
 
   .product-grid{
@@ -765,6 +839,7 @@
     cursor:pointer;
     transition:background .25s ease, color .25s ease;
   }
+  /* "see-through" until pressed, then fills solid gold - not white */
   .fan-style-btn.is-active{
     background:var(--gold);
     color:#fff;
@@ -1085,6 +1160,7 @@
     margin-bottom:0.5rem;
   }
   .review-field input[type="text"],
+  .review-field input[type="email"],
   .review-field textarea{
     width:100%;
     font-family:'Quicksand', sans-serif;
@@ -1098,6 +1174,7 @@
     transition:border-color .25s ease, box-shadow .25s ease;
   }
   .review-field input[type="text"]:focus,
+  .review-field input[type="email"]:focus,
   .review-field textarea:focus{
     outline:none;
     border-color:var(--gold);
@@ -1749,6 +1826,130 @@
     margin-top:0.6rem;
     padding:0.9rem 1.5rem;
     font-size:0.8rem;
+  }
+
+  /* ---------- CART / ORDERS TABS ---------- */
+  .cart-tabs{
+    display:flex;
+    justify-content:center;
+    gap:0.6rem;
+    max-width:760px;
+    margin:0 auto 2.2rem;
+    padding:0 6vw;
+  }
+  .cart-tab{
+    flex:1 1 200px;
+    max-width:220px;
+    padding:0.7rem 1.2rem;
+    border:1.5px solid var(--gold);
+    border-radius:999px;
+    background:none;
+    color:var(--gold-deep);
+    font-family:'Quicksand', sans-serif;
+    font-weight:700;
+    font-size:0.72rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:background .25s ease, color .25s ease;
+  }
+  .cart-tab.is-active{
+    background:var(--gold);
+    color:var(--paper);
+  }
+  .cart-tab:not(.is-active):hover{ background:var(--gold-light); }
+
+  /* ---------- ORDER HISTORY (cart.html "My Orders" tab) ---------- */
+  .orders-wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:0 6vw 8vh;
+  }
+  .orders-empty{
+    text-align:center;
+    font-size:1.05rem;
+    color:var(--ink-soft);
+  }
+  .orders-empty a{ color:var(--gold-deep); text-decoration:underline; }
+  .orders-list[hidden]{ display:none; }
+  .orders-list{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:1.2rem;
+  }
+  .order-card{
+    background:var(--paper);
+    border-radius:14px;
+    padding:1.1rem 1.3rem;
+    box-shadow:0 4px 14px rgba(43,36,28,0.08);
+  }
+  .order-card-head{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:0.4rem 1rem;
+    border-bottom:1px solid var(--hair);
+    padding-bottom:0.7rem;
+    margin-bottom:0.7rem;
+  }
+  .order-id{
+    font-family:'Shippori Mincho', serif;
+    font-size:1rem;
+    color:var(--ink);
+  }
+  .order-date{
+    font-size:0.75rem;
+    color:var(--ink-soft);
+  }
+  .order-status{
+    font-size:0.68rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    font-weight:700;
+    color:var(--gold-deep);
+    border:1px solid var(--gold);
+    border-radius:999px;
+    padding:0.25rem 0.7rem;
+  }
+  .order-items{
+    list-style:none;
+    margin:0 0 0.8rem;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:0.5rem;
+  }
+  .order-item-row{
+    display:flex;
+    align-items:center;
+    gap:0.6rem;
+    font-size:0.88rem;
+    color:var(--ink);
+  }
+  .order-item-swatch{
+    width:20px; height:20px;
+    border-radius:50%;
+    flex-shrink:0;
+    border:1px solid rgba(43,36,28,0.15);
+  }
+  .order-item-name{ flex:1; }
+  .order-item-qty{ color:var(--ink-soft); font-size:0.8rem; }
+  .order-item-price{ color:var(--ink-soft); font-size:0.85rem; min-width:4.5rem; text-align:right; }
+  .order-card-foot{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    border-top:1px solid var(--hair);
+    padding-top:0.7rem;
+  }
+  .order-total-value{
+    font-family:'Shippori Mincho', serif;
+    font-size:1.15rem;
+    color:var(--gold-deep);
   }
 
   /* ---------- CART DRAWER (Temu-style slide-in, on every page via the nav Cart link) ---------- */

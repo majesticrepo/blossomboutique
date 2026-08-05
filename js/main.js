@@ -1054,6 +1054,27 @@
   function cartSubtotal(cart){ return cart.reduce((sum, item) => sum + cartItemPrice(item) * item.qty, 0); }
   function formatPrice(n){ return '$' + n.toFixed(2); }
 
+  // ----- Order history: a receipt is saved (same account scoping as the
+  // cart, guests included) each time checkout.html completes an order, so
+  // the "My Orders" tab on cart.html has something to show even after the
+  // cart itself has been cleared. -----
+  function ORDERS_KEY_FN(){
+    const id = window.bbAccount ? window.bbAccount.getCurrentAccountId() : null;
+    return id ? 'bb_orders_' + id : 'bb_orders';
+  }
+  function getOrders(){
+    try{ return JSON.parse(localStorage.getItem(ORDERS_KEY_FN())) || []; }
+    catch(e){ return []; }
+  }
+  function saveOrders(orders){
+    try{ localStorage.setItem(ORDERS_KEY_FN(), JSON.stringify(orders)); }catch(e){}
+  }
+  function addOrder(order){
+    const orders = getOrders();
+    orders.unshift(order); // newest first
+    saveOrders(orders);
+  }
+
   function updateCartBadge(){
     const count = cartCount(getCart());
     document.querySelectorAll('#cartCount, .cart-count').forEach(badge => {
@@ -1061,12 +1082,40 @@
       badge.hidden = count === 0;
     });
   }
+  // ----- little two-note "ding" so adding to cart is audible, not just visual.
+  // Synthesised with the Web Audio API rather than an audio file, so there's
+  // nothing to fetch and it works the instant the page loads. -----
+  let sharedAudioCtx = null;
+  function playCartChime(){
+    try{
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if(!AudioCtx) return;
+      if(!sharedAudioCtx) sharedAudioCtx = new AudioCtx();
+      if(sharedAudioCtx.state === 'suspended') sharedAudioCtx.resume();
+      const ctx = sharedAudioCtx;
+      const now = ctx.currentTime;
+      [[880, 0], [1318.5, 0.09]].forEach(([freq, delay]) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + delay);
+        gain.gain.setValueAtTime(0, now + delay);
+        gain.gain.linearRampToValueAtTime(0.22, now + delay + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + delay + 0.35);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(now + delay);
+        osc.stop(now + delay + 0.4);
+      });
+    }catch(e){ /* audio is a nice-to-have, never block the cart on it */ }
+  }
+
   function addToCart(product, colour, scent, price){
     const cart = getCart();
     const existing = cart.find(item => item.product === product);
     if(existing){ existing.qty += 1; }
     else{ cart.push({ product, colour, scent, price: Number(price) || DEFAULT_PRICE, qty: 1 }); }
     saveCart(cart);
+    playCartChime();
     refreshCartViews();
   }
   function setQty(index, qty){
@@ -1168,6 +1217,105 @@
     };
   }
 
+  // ----- "My Orders" tab (cart.html): a receipt card per past order, built
+  // from order history saved when checkout.html completes. -----
+  const ordersList = document.getElementById('ordersList');
+  let renderOrdersPage = () => {};
+  if(ordersList){
+    const ordersEmpty = document.getElementById('ordersEmpty');
+    const FULFIL_LABELS = { pickup: 'Store Pickup', delivery: 'Delivery' };
+    function formatOrderDate(iso){
+      const d = new Date(iso);
+      if(isNaN(d)) return '';
+      return d.toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
+    }
+    function buildOrderCard(order){
+      const li = document.createElement('li');
+      li.className = 'order-card';
+
+      const head = document.createElement('div');
+      head.className = 'order-card-head';
+      const idDate = document.createElement('div');
+      const id = document.createElement('div');
+      id.className = 'order-id';
+      id.textContent = order.id;
+      const date = document.createElement('div');
+      date.className = 'order-date';
+      date.textContent = formatOrderDate(order.date);
+      idDate.append(id, date);
+      const status = document.createElement('span');
+      status.className = 'order-status';
+      status.textContent = FULFIL_LABELS[order.fulfilment] || 'Order Placed';
+      head.append(idDate, status);
+
+      const items = document.createElement('ul');
+      items.className = 'order-items';
+      (order.items || []).forEach(item => {
+        const row = document.createElement('li');
+        row.className = 'order-item-row';
+        const swatch = document.createElement('span');
+        swatch.className = 'order-item-swatch';
+        swatch.style.background = colourHex[item.colour] || '#ccc';
+        const name = document.createElement('span');
+        name.className = 'order-item-name';
+        name.textContent = item.product;
+        const qty = document.createElement('span');
+        qty.className = 'order-item-qty';
+        qty.textContent = 'Qty ' + item.qty;
+        const price = document.createElement('span');
+        price.className = 'order-item-price';
+        price.textContent = formatPrice(item.price * item.qty);
+        row.append(swatch, name, qty, price);
+        items.appendChild(row);
+      });
+
+      const foot = document.createElement('div');
+      foot.className = 'order-card-foot';
+      const totalLabel = document.createElement('span');
+      totalLabel.className = 'cart-total-label';
+      totalLabel.textContent = (order.count || 0) + (order.count === 1 ? ' item' : ' items');
+      const totalValue = document.createElement('span');
+      totalValue.className = 'order-total-value';
+      totalValue.textContent = formatPrice(order.total || 0);
+      foot.append(totalLabel, totalValue);
+
+      li.append(head, items, foot);
+      return li;
+    }
+    renderOrdersPage = function(){
+      const orders = getOrders();
+      if(orders.length === 0){
+        ordersEmpty.hidden = false;
+        ordersList.hidden = true;
+        return;
+      }
+      ordersEmpty.hidden = true;
+      ordersList.hidden = false;
+      ordersList.innerHTML = '';
+      orders.forEach(order => ordersList.appendChild(buildOrderCard(order)));
+    };
+  }
+
+  // ----- Cart / My Orders tab toggle on cart.html -----
+  (function(){
+    const cartTabBtn = document.getElementById('cartTabBtn');
+    const ordersTabBtn = document.getElementById('ordersTabBtn');
+    const cartWrapEl = document.getElementById('cartWrap');
+    const ordersWrapEl = document.getElementById('ordersWrap');
+    if(!cartTabBtn || !ordersTabBtn) return;
+    function showTab(tab){
+      const isCart = tab === 'cart';
+      cartWrapEl.hidden = !isCart;
+      ordersWrapEl.hidden = isCart;
+      cartTabBtn.classList.toggle('is-active', isCart);
+      ordersTabBtn.classList.toggle('is-active', !isCart);
+      cartTabBtn.setAttribute('aria-selected', String(isCart));
+      ordersTabBtn.setAttribute('aria-selected', String(!isCart));
+    }
+    cartTabBtn.addEventListener('click', () => showTab('cart'));
+    ordersTabBtn.addEventListener('click', () => showTab('orders'));
+  })();
+
   // ----- Temu-style slide-in cart drawer: built once in JS and appended to
   // every page's <body>, so the nav's Cart link opens it instead of always
   // navigating away - cart.html itself stays as the full-page fallback. -----
@@ -1242,6 +1390,7 @@
   function refreshCartViews(){
     updateCartBadge();
     renderCartPage();
+    renderOrdersPage();
     cartDrawer.render();
   }
   refreshCartViews();
@@ -1365,6 +1514,32 @@
         ? 'Thanks, ' + name.value.trim() + ' - we will text ' + phone.value.trim() + ' when your order is ready to collect in-store. Paid with card ending ' + last4 + '.'
         : 'Thanks, ' + name.value.trim() + ' - your order will be delivered to the address you provided. Paid with card ending ' + last4 + '.';
 
+      // Save a receipt to order history before the cart is cleared, so
+      // cart.html's "My Orders" tab has something to show afterwards.
+      const cartAtCheckout = getCart();
+      addOrder({
+        id: 'BB-' + Date.now().toString(36).toUpperCase(),
+        date: new Date().toISOString(),
+        fulfilment: isPickup ? 'pickup' : 'delivery',
+        name: name.value.trim(),
+        phone: phone.value.trim(),
+        address: isPickup ? null : {
+          line1: address1.value.trim(),
+          line2: document.getElementById('ckAddress2').value.trim(),
+          city: city.value.trim(),
+          state: state.value.trim(),
+          zip: zip.value.trim(),
+          country: country.value.trim(),
+        },
+        last4,
+        items: cartAtCheckout.map(item => ({
+          product: item.product, colour: item.colour, scent: item.scent,
+          price: cartItemPrice(item), qty: item.qty,
+        })),
+        count: cartCount(cartAtCheckout),
+        total: cartSubtotal(cartAtCheckout),
+      });
+
       // Card details never leave this form and are never saved anywhere -
       // clear them immediately once the "payment" is done.
       checkoutForm.reset();
@@ -1441,6 +1616,23 @@
           images.forEach(img => {
             if(img.dataset.styleImg === style) img.removeAttribute('hidden');
             else img.setAttribute('hidden', '');
+          });
+        });
+      });
+    }
+
+    // ----- FANS / BOOKMARKS / BRACELETS category tabs: swap which panel
+    // shows under the colour-dot row. Only Fans has real stock today; the
+    // others switch to a short "coming soon" panel instead of the grid. -----
+    const categoryTabs = document.querySelectorAll('.category-tab-row .category-tab');
+    if(categoryTabs.length){
+      const panels = document.querySelectorAll('[data-category-panel]');
+      categoryTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const category = tab.dataset.category;
+          categoryTabs.forEach(t => t.classList.toggle('is-active', t === tab));
+          panels.forEach(panel => {
+            panel.hidden = panel.dataset.categoryPanel !== category;
           });
         });
       });
