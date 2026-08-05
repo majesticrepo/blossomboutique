@@ -493,6 +493,39 @@
     .colour-dot-row .swatch{ width:34px; height:34px; }
   }
 
+  /* ---------- PRODUCTS PAGE: category row (below the colour dots) ---------- */
+  .category-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:1.6rem;
+    margin:0 auto 3.4rem;
+    padding-bottom:2.6rem;
+    max-width:1300px;
+    border-bottom:1px solid var(--hair);
+  }
+  .category-item{
+    color:var(--gold-deep);
+    font-weight:600;
+    letter-spacing:0.18em;
+    font-size:0.85rem;
+    text-transform:uppercase;
+    transition:letter-spacing .3s ease, color .3s ease;
+  }
+  .category-item:hover{
+    letter-spacing:0.26em;
+    color:var(--gold);
+    cursor:pointer;
+  }
+  .category-divider{
+    color:var(--hair);
+    font-size:0.85rem;
+  }
+  @media (max-width:600px){
+    .category-row{ gap:1rem; }
+    .category-item{ font-size:0.72rem; letter-spacing:0.12em; }
+  }
+
   .product-grid{
     display:grid;
     grid-template-columns:repeat(4, 1fr);
