@@ -1473,6 +1473,13 @@
     font-size:1.05rem;
     color:var(--ink);
   }
+  .review-card-name.is-editable{
+    cursor:pointer;
+  }
+  .review-card-name.is-editable:hover{
+    text-decoration:underline dotted;
+    text-underline-offset:3px;
+  }
   .review-card-date{
     font-size:0.75rem;
     letter-spacing:0.06em;

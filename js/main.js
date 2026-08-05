@@ -413,7 +413,7 @@
           + '</div>'
           + '</div>'
           + '<div class="review-card-head">'
-          + '<span class="review-card-name">' + escapeHtml(r.name) + reportedTag + '</span>'
+          + '<span class="review-card-name' + (isOwner ? ' is-editable' : '') + '"' + (isOwner ? ' title="Right-click to edit"' : '') + '>' + escapeHtml(r.name) + reportedTag + '</span>'
           + '<span class="review-card-date">' + formatDate(r.date) + editedTag + '</span>'
           + '</div>'
           + '<div class="review-card-stars">' + filled + empty + '</div>'
@@ -602,6 +602,19 @@
     });
     document.addEventListener('click', e => {
       if(!e.target.closest('.review-menu')) closeAllMenus();
+    });
+
+    // right-click your own review's name as a shortcut into edit mode,
+    // same as the "..." menu's Edit action
+    reviewList.addEventListener('contextmenu', e => {
+      const nameEl = e.target.closest('.review-card-name.is-editable');
+      if(!nameEl) return;
+      const id = nameEl.closest('.review-card').dataset.id;
+      const review = reviews.find(r => r.id === id);
+      if(!review || review.authorId !== authorId) return;
+      e.preventDefault();
+      closeAllMenus();
+      enterEditMode(review);
     });
 
     // ----- report modal: pick a reason before a review gets flagged -----
