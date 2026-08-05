@@ -32,6 +32,65 @@
       <circle cx="100" cy="185" r="11" fill="#E3B34A" stroke="#2B241C" stroke-width="3"/>
     </symbol>
 
+    <!-- Realistic open hand-fan: silk panel tinted per colour via var(--c),
+         fine bamboo pleat ribs, guard sticks and a hanging gold tassel.
+         Note: gradients don't inherit var(--c) correctly once referenced
+         through <use> from a shared <symbol>, so shading here is built
+         from flat colour-mix() fills layered directly instead. -->
+    <symbol id="realisticFan" viewBox="0 0 200 200">
+      <line x1="100" y1="174" x2="100" y2="186" stroke="#9C7A32" stroke-width="2.4" stroke-linecap="round"/>
+
+      <path d="M 100,174 L 7.3,142.1 Q 17.2,136.3 15.1,125.1 Q 25.8,121.3 25.9,109.9 Q 37.1,108.2 39.4,97.0 Q 50.7,97.5 55.0,86.9 Q 66.1,89.5 72.4,80.0 Q 82.8,84.6 90.7,76.4 Q 100.0,83.0 109.3,76.4 Q 117.2,84.6 127.6,80.0 Q 133.9,89.5 145.0,86.9 Q 149.3,97.5 160.6,97.0 Q 162.9,108.2 174.1,109.9 Q 174.2,121.3 184.9,125.1 Q 182.8,136.3 192.7,142.1 L 100,174 Z"
+        fill="var(--c)" stroke="#2B241C" stroke-width="2.5" stroke-linejoin="round"/>
+
+      <!-- soft shadow where the pleats gather at the pivot -->
+      <path d="M 100,174 L 75,130.7 Q 100,120 125,130.7 Z" fill="color-mix(in srgb, var(--c) 60%, black)" opacity="0.3"/>
+
+      <!-- soft highlight along the open outer rim -->
+      <ellipse cx="100" cy="98" rx="46" ry="16" fill="color-mix(in srgb, var(--c) 28%, white)" opacity="0.35"/>
+
+      <g stroke="color-mix(in srgb, var(--c) 45%, black)" stroke-width="1.1" stroke-linecap="round" opacity="0.55">
+        <line x1="100" y1="174" x2="30.7" y2="134.1"/>
+        <line x1="100" y1="174" x2="39.5" y2="121.7"/>
+        <line x1="100" y1="174" x2="50.5" y2="111.2"/>
+        <line x1="100" y1="174" x2="63.3" y2="102.9"/>
+        <line x1="100" y1="174" x2="77.4" y2="97.2"/>
+        <line x1="100" y1="174" x2="92.4" y2="94.4"/>
+        <line x1="100" y1="174" x2="107.6" y2="94.4"/>
+        <line x1="100" y1="174" x2="122.6" y2="97.2"/>
+        <line x1="100" y1="174" x2="136.7" y2="102.9"/>
+        <line x1="100" y1="174" x2="149.5" y2="111.2"/>
+        <line x1="100" y1="174" x2="160.5" y2="121.7"/>
+        <line x1="100" y1="174" x2="169.3" y2="134.1"/>
+      </g>
+
+      <g fill="color-mix(in srgb, var(--c) 22%, white)" opacity="0.9">
+        <circle cx="29.9" cy="142.1" r="3.2"/>
+        <circle cx="46.8" cy="118.3" r="3.2"/>
+        <circle cx="71.3" cy="102.5" r="3.2"/>
+        <circle cx="100.0" cy="97.0" r="3.2"/>
+        <circle cx="128.7" cy="102.5" r="3.2"/>
+        <circle cx="153.2" cy="118.3" r="3.2"/>
+        <circle cx="170.1" cy="142.1" r="3.2"/>
+      </g>
+
+      <g stroke="#B8925A" stroke-width="4.5" stroke-linecap="round">
+        <line x1="100" y1="174" x2="2.6" y2="140.5"/>
+        <line x1="100" y1="174" x2="197.4" y2="140.5"/>
+      </g>
+
+      <circle cx="100" cy="174" r="7" fill="#E9D9B0" stroke="#2B241C" stroke-width="2"/>
+      <circle cx="100" cy="174" r="2.6" fill="#9C7A32"/>
+
+      <ellipse cx="100" cy="190" rx="6.2" ry="4.6" fill="#C6A15B" stroke="#2B241C" stroke-width="1.5"/>
+      <g stroke="#9C7A32" stroke-width="1.6" stroke-linecap="round">
+        <line x1="96.5" y1="193.5" x2="95" y2="199"/>
+        <line x1="98.8" y1="194.5" x2="98" y2="200"/>
+        <line x1="101.2" y1="194.5" x2="102" y2="200"/>
+        <line x1="103.5" y1="193.5" x2="105" y2="199"/>
+      </g>
+    </symbol>
+
     <linearGradient id="fanSheen" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#fff" stop-opacity="0.55"/>
       <stop offset="1" stop-color="#fff" stop-opacity="0"/>
@@ -773,7 +832,7 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanRed"/></svg>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#realisticFan"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
     <div class="page-text">
@@ -793,7 +852,7 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanOrange"/></svg>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#realisticFan"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
     <div class="page-text">
@@ -813,7 +872,7 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanYellow"/></svg>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#realisticFan"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
     <div class="page-text">
@@ -833,7 +892,7 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanGreen"/></svg>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#realisticFan"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
     <div class="page-text">
@@ -853,7 +912,7 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanBlue"/></svg>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#realisticFan"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
     <div class="page-text">
@@ -873,7 +932,7 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanPurple"/></svg>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#realisticFan"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
     <div class="page-text">
@@ -893,7 +952,7 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanPink"/></svg>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#realisticFan"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
     <div class="page-text">
@@ -913,7 +972,7 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanBrown"/></svg>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#realisticFan"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
     <div class="page-text">
@@ -933,7 +992,7 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanBlack"/></svg>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#realisticFan"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
     <div class="page-text">
@@ -953,7 +1012,7 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanWhite"/></svg>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#realisticFan"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
     <div class="page-text">
@@ -973,7 +1032,7 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanBeige"/></svg>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#realisticFan"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
     <div class="page-text">
@@ -993,7 +1052,7 @@
   <a class="back-link" href="products.html" data-close-product>&larr; Back to Products</a>
   <div class="page-main">
     <div class="page-visual">
-      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#fanGold"/></svg>
+      <svg class="cartoon-flower" data-style-img="cartoon"><use href="#realisticFan"/></svg>
       <svg class="cartoon-flower" data-style-img="elegant" hidden><use href="#cartoonFan"/></svg>
     </div>
     <div class="page-text">
