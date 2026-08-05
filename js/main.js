@@ -1035,7 +1035,7 @@
   // scoped to that account (see window.bbAccount above) so logging back in
   // with the same email/phone/Google address on this browser brings it back. -----
   function CART_KEY_FN(){ return window.bbAccount ? window.bbAccount.cartKeyFor(window.bbAccount.getCurrentAccountId()) : 'bb_cart'; }
-  const DEFAULT_PRICE = 12.54;
+  const DEFAULT_PRICE = 9.99;
   const colourHex = {
     Red:'#C0392B', Orange:'#D96C2B', Yellow:'#DDAF35', Green:'#6B8F52',
     Blue:'#5F8DBF', Purple:'#8B6FA8', Pink:'#E39FB0', Brown:'#7B5A3E',
@@ -1467,4 +1467,31 @@
         });
       });
     }
+  }
+
+  // ----- products.html: category tabs (Fans / Bracelets / Bookmarks) swap
+  // which colour-dot-row + product-grid panel is visible, and update the
+  // section title to match -----
+  const categoryRow = document.querySelector('.category-row');
+  if(categoryRow){
+    const categoryButtons = categoryRow.querySelectorAll('.category-item[data-category]');
+    const panels = document.querySelectorAll('.collection-panel');
+    const collectionTitle = document.getElementById('collectionTitle');
+    const collectionTitles = {
+      fans: 'A fan for every <em>shade</em>',
+      bracelets: 'A bracelet for every <em>wrist</em>',
+      bookmarks: 'A bookmark for every <em>reader</em>',
+    };
+    categoryButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const category = btn.dataset.category;
+        categoryButtons.forEach(b => {
+          const isMatch = b === btn;
+          b.classList.toggle('is-active', isMatch);
+          b.setAttribute('aria-selected', isMatch ? 'true' : 'false');
+        });
+        panels.forEach(panel => { panel.hidden = panel.dataset.panel !== category; });
+        if(collectionTitle && collectionTitles[category]) collectionTitle.innerHTML = collectionTitles[category];
+      });
+    });
   }

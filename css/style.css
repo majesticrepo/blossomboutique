@@ -505,22 +505,32 @@
     border-bottom:1px solid var(--hair);
   }
   .category-item{
+    background:none;
+    border:none;
+    padding:0 0 0.4rem;
+    font-family:'Quicksand', sans-serif;
     color:var(--gold-deep);
     font-weight:600;
     letter-spacing:0.18em;
     font-size:0.85rem;
     text-transform:uppercase;
-    transition:letter-spacing .3s ease, color .3s ease;
+    border-bottom:2px solid transparent;
+    transition:letter-spacing .3s ease, color .3s ease, border-color .3s ease;
   }
   .category-item:hover{
     letter-spacing:0.26em;
     color:var(--gold);
     cursor:pointer;
   }
+  .category-item.is-active{
+    color:var(--gold);
+    border-bottom-color:var(--gold);
+  }
   .category-divider{
     color:var(--hair);
     font-size:0.85rem;
   }
+  .collection-panel[hidden]{ display:none; }
   @media (max-width:600px){
     .category-row{ gap:1rem; }
     .category-item{ font-size:0.72rem; letter-spacing:0.12em; }
