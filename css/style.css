@@ -2265,11 +2265,14 @@
     color:var(--ink-soft);
     margin-bottom:1.3rem;
   }
+  .account-mode-row,
   .account-method-row{
     display:flex;
     gap:0.5rem;
     margin-bottom:1.3rem;
   }
+  .account-mode-row{ margin-bottom:1rem; }
+  .account-mode-btn,
   .account-method-btn{
     flex:1 1 0;
     padding:0.55rem 0.4rem;
@@ -2284,6 +2287,12 @@
     cursor:pointer;
     transition:background .25s ease, border-color .25s ease, color .25s ease;
   }
+  .account-mode-btn{
+    font-size:0.78rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+  }
+  .account-mode-btn.is-active,
   .account-method-btn.is-active{
     background:var(--gold);
     border-color:var(--gold);

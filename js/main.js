@@ -881,10 +881,12 @@
       }
     }
 
-    // ----- modal: one method row (Email/Google/Phone) + nickname + identifier.
-    // Submitting looks the identifier up: an existing match logs straight in
-    // (nickname + cart come from what was saved before), a new one signs up
-    // and carries over whatever's currently in the cart. -----
+    // ----- modal: a Sign In / Log In tab switch on top of one shared method
+    // row (Email/Google/Phone) + nickname + identifier. The tabs only relabel
+    // the title and submit button - submitting still looks the identifier up
+    // underneath: an existing match logs straight in (nickname + cart come
+    // from what was saved before), a new one signs up and carries over
+    // whatever's currently in the cart. -----
     const modal = document.createElement('div');
     modal.className = 'account-modal';
     modal.id = 'accountModal';
@@ -893,7 +895,11 @@
       '<div class="account-modal-backdrop"></div>' +
       '<div class="account-modal-panel" role="dialog" aria-modal="true" aria-labelledby="accountModalTitle">' +
         '<button type="button" class="account-modal-close" aria-label="Close">&times;</button>' +
-        '<h3 id="accountModalTitle">Sign In / Sign Up</h3>' +
+        '<div class="account-mode-row" role="tablist" aria-label="Sign in or log in">' +
+          '<button type="button" class="account-mode-btn is-active" data-mode="signin" role="tab" aria-selected="true">Sign In</button>' +
+          '<button type="button" class="account-mode-btn" data-mode="login" role="tab" aria-selected="false">Log In</button>' +
+        '</div>' +
+        '<h3 id="accountModalTitle">Sign in to your account</h3>' +
         '<p class="account-modal-sub">This site doesn’t have a server, so there’s no real Google sign-in or SMS — use any email, Google address, or phone number as your key, and this browser remembers your nickname and cart for it.</p>' +
         '<div class="account-method-row" role="group" aria-label="Sign-in method">' +
           '<button type="button" class="account-method-btn is-active" data-method="email">Email</button>' +
@@ -910,10 +916,28 @@
             '<input type="text" id="accountNickname" placeholder="Only needed the first time" autocomplete="nickname">' +
           '</label>' +
           '<p class="account-modal-error" id="accountModalError" hidden></p>' +
-          '<button type="submit" class="account-submit-btn">Continue</button>' +
+          '<button type="submit" class="account-submit-btn">Sign In</button>' +
         '</form>' +
       '</div>';
     document.body.appendChild(modal);
+
+    const modeBtns = modal.querySelectorAll('.account-mode-btn');
+    const titleEl = modal.querySelector('#accountModalTitle');
+    const submitBtn = modal.querySelector('.account-submit-btn');
+    const MODE_TITLES = { signin: 'Sign in to your account', login: 'Log in to your account' };
+    const MODE_SUBMIT_LABELS = { signin: 'Sign In', login: 'Log In' };
+    modeBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const mode = btn.dataset.mode;
+        modeBtns.forEach(b => {
+          const isActive = b === btn;
+          b.classList.toggle('is-active', isActive);
+          b.setAttribute('aria-selected', String(isActive));
+        });
+        titleEl.textContent = MODE_TITLES[mode];
+        submitBtn.textContent = MODE_SUBMIT_LABELS[mode];
+      });
+    });
 
     const backdrop = modal.querySelector('.account-modal-backdrop');
     const closeBtn = modal.querySelector('.account-modal-close');
