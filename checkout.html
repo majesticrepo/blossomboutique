@@ -117,27 +117,14 @@
       <div class="checkout-block">
         <h3 class="checkout-block-title">Payment</h3>
         <div class="checkout-field">
-          <span>Cardholder Name</span>
-          <input type="text" id="ckCardName" autocomplete="cc-name">
+          <span>Email (for your receipt)</span>
+          <input type="email" id="ckEmail" autocomplete="email">
         </div>
-        <div class="checkout-field">
-          <span>Card Number</span>
-          <input type="text" id="ckCardNumber" inputmode="numeric" maxlength="19" placeholder="1234 5678 9012 3456" autocomplete="cc-number">
-        </div>
-        <div class="checkout-field-row">
-          <div class="checkout-field">
-            <span>Expiry (MM/YY)</span>
-            <input type="text" id="ckCardExpiry" inputmode="numeric" maxlength="5" placeholder="MM/YY" autocomplete="cc-exp">
-          </div>
-          <div class="checkout-field">
-            <span>CVV</span>
-            <input type="text" id="ckCardCvv" inputmode="numeric" maxlength="4" placeholder="123" autocomplete="cc-csc">
-          </div>
-        </div>
+        <p class="checkout-payment-note">You'll enter your card details on Stripe's secure payment page next — Blossom Boutique never sees or stores your card number.</p>
       </div>
 
       <p class="checkout-feedback" id="checkoutFeedback"></p>
-      <button type="submit" class="review-submit checkout-submit" id="checkoutSubmit">Place Order</button>
+      <button type="submit" class="review-submit checkout-submit" id="checkoutSubmit">Continue to Payment</button>
     </form>
 
     <aside class="checkout-summary" id="checkoutSummary">

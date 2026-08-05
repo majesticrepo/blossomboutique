@@ -1959,6 +1959,13 @@
     color:var(--ink-soft);
   }
 
+  .checkout-payment-note{
+    margin:-0.4rem 0 0.2rem;
+    font-size:0.88rem;
+    font-style:italic;
+    color:var(--ink-soft);
+  }
+
   .checkout-feedback{
     min-height:1.1em;
     margin:0 0 0.9rem;

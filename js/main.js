@@ -1247,9 +1247,12 @@
   refreshCartViews();
 
   // ----- checkout.html: Temu-style checkout - delivery/pickup fulfilment,
-  // a card payment form (front-end only, nothing is transmitted anywhere),
   // and an order summary built from the same cart used everywhere else.
-  // Placing the order clears the cart so nothing lingers afterwards. -----
+  // "Continue to Payment" hands the cart to the server, which creates a
+  // Stripe Checkout Session and redirects the customer to Stripe's own
+  // hosted payment page - card details are typed there, never on this
+  // site. Stripe pays the money out to whatever bank account (Monzo) is
+  // configured in the Stripe Dashboard. See server.js and PAYMENTS.md. -----
   const checkoutForm = document.getElementById('checkoutForm');
   if(checkoutForm){
     const checkoutWrap = document.getElementById('checkoutWrap');
@@ -1258,10 +1261,40 @@
     const checkoutTotalCount = document.getElementById('checkoutTotalCount');
     const checkoutTotalPrice = document.getElementById('checkoutTotalPrice');
     const checkoutFeedback = document.getElementById('checkoutFeedback');
+    const checkoutSubmit = document.getElementById('checkoutSubmit');
     const checkoutSuccess = document.getElementById('checkoutSuccess');
     const checkoutSuccessMsg = document.getElementById('checkoutSuccessMsg');
     const addressBlock = document.getElementById('addressBlock');
     const pickupNote = document.getElementById('pickupNote');
+
+    // ----- returning from Stripe: confirm the session actually paid before
+    // showing the success screen, and clear the cart only once it has. -----
+    (function handleStripeReturn(){
+      const params = new URLSearchParams(window.location.search);
+      const paymentState = params.get('payment');
+      if(paymentState === 'success'){
+        const sessionId = params.get('session_id');
+        checkoutFeedback.textContent = 'Confirming your payment…';
+        fetch('/api/session-status?session_id=' + encodeURIComponent(sessionId))
+          .then(res => res.json())
+          .then(data => {
+            if(data.status === 'paid'){
+              checkoutSuccessMsg.textContent = 'Thank you for your order — your payment was successful.';
+              saveCart([]);
+              refreshCartViews();
+              checkoutWrap.hidden = true;
+              checkoutSuccess.hidden = false;
+            } else {
+              checkoutFeedback.textContent = 'We could not confirm this payment. Please contact us if you were charged.';
+            }
+          })
+          .catch(() => {
+            checkoutFeedback.textContent = 'We could not confirm this payment. Please contact us if you were charged.';
+          });
+      } else if(paymentState === 'cancelled'){
+        checkoutFeedback.textContent = 'Payment was cancelled — your cart is still here whenever you\'re ready.';
+      }
+    })();
 
     function renderCheckoutSummary(){
       const cart = getCart();
@@ -1299,22 +1332,6 @@
     fulfilRadios.forEach(r => r.addEventListener('change', updateFulfilmentView));
     updateFulfilmentView();
 
-    // ----- light input formatting: card number spacing + expiry slash -----
-    const cardNumberInput = document.getElementById('ckCardNumber');
-    cardNumberInput.addEventListener('input', () => {
-      cardNumberInput.value = cardNumberInput.value.replace(/[^\d]/g, '').slice(0, 16).replace(/(\d{4})(?=\d)/g, '$1 ');
-    });
-    const cardExpiryInput = document.getElementById('ckCardExpiry');
-    cardExpiryInput.addEventListener('input', () => {
-      let digits = cardExpiryInput.value.replace(/[^\d]/g, '').slice(0, 4);
-      if(digits.length > 2) digits = digits.slice(0, 2) + '/' + digits.slice(2);
-      cardExpiryInput.value = digits;
-    });
-    const cardCvvInput = document.getElementById('ckCardCvv');
-    cardCvvInput.addEventListener('input', () => {
-      cardCvvInput.value = cardCvvInput.value.replace(/[^\d]/g, '').slice(0, 4);
-    });
-
     function markField(input, valid){
       input.classList.toggle('is-invalid', !valid);
       return valid;
@@ -1322,15 +1339,13 @@
 
     checkoutForm.addEventListener('submit', e => {
       e.preventDefault();
-      if(getCart().length === 0) return;
+      const cart = getCart();
+      if(cart.length === 0) return;
 
       const isPickup = checkoutForm.querySelector('input[name="fulfilment"]:checked').value === 'pickup';
       const name = document.getElementById('ckName');
       const phone = document.getElementById('ckPhone');
-      const cardName = document.getElementById('ckCardName');
-      const cardNumber = document.getElementById('ckCardNumber');
-      const cardExpiry = document.getElementById('ckCardExpiry');
-      const cardCvv = document.getElementById('ckCardCvv');
+      const email = document.getElementById('ckEmail');
       const address1 = document.getElementById('ckAddress1');
       const city = document.getElementById('ckCity');
       const state = document.getElementById('ckState');
@@ -1340,6 +1355,7 @@
       let ok = true;
       ok = markField(name, name.value.trim().length > 0) && ok;
       ok = markField(phone, phone.value.trim().length > 0) && ok;
+      ok = markField(email, /\S+@\S+\.\S+/.test(email.value.trim())) && ok;
       if(!isPickup){
         ok = markField(address1, address1.value.trim().length > 0) && ok;
         ok = markField(city, city.value.trim().length > 0) && ok;
@@ -1349,31 +1365,37 @@
       } else {
         [address1, city, state, zip, country].forEach(f => f.classList.remove('is-invalid'));
       }
-      ok = markField(cardName, cardName.value.trim().length > 0) && ok;
-      ok = markField(cardNumber, cardNumber.value.replace(/\s/g, '').length >= 13) && ok;
-      ok = markField(cardExpiry, /^\d{2}\/\d{2}$/.test(cardExpiry.value.trim())) && ok;
-      ok = markField(cardCvv, cardCvv.value.trim().length >= 3) && ok;
 
       if(!ok){
         checkoutFeedback.textContent = 'Please fill in every field so we can complete your order.';
         return;
       }
 
-      checkoutFeedback.textContent = '';
-      const last4 = cardNumber.value.replace(/\s/g, '').slice(-4);
-      checkoutSuccessMsg.textContent = isPickup
-        ? 'Thanks, ' + name.value.trim() + ' - we will text ' + phone.value.trim() + ' when your order is ready to collect in-store. Paid with card ending ' + last4 + '.'
-        : 'Thanks, ' + name.value.trim() + ' - your order will be delivered to the address you provided. Paid with card ending ' + last4 + '.';
+      checkoutFeedback.textContent = 'Taking you to secure payment…';
+      checkoutSubmit.disabled = true;
 
-      // Card details never leave this form and are never saved anywhere -
-      // clear them immediately once the "payment" is done.
-      checkoutForm.reset();
-
-      saveCart([]);
-      refreshCartViews();
-
-      checkoutWrap.hidden = true;
-      checkoutSuccess.hidden = false;
+      fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cart,
+          fulfilment: isPickup ? 'pickup' : 'delivery',
+          contact: { name: name.value.trim(), phone: phone.value.trim(), email: email.value.trim() },
+        }),
+      })
+        .then(res => res.json())
+        .then(data => {
+          if(data.url){
+            window.location.href = data.url;
+          } else {
+            checkoutFeedback.textContent = data.error || 'Something went wrong starting payment. Please try again.';
+            checkoutSubmit.disabled = false;
+          }
+        })
+        .catch(() => {
+          checkoutFeedback.textContent = 'Something went wrong starting payment. Please try again.';
+          checkoutSubmit.disabled = false;
+        });
     });
   }
 
